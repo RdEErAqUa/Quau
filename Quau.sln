@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quau", "Quau\Quau.csproj", "{B9A67804-25EC-47D6-A263-DEEEF49B9502}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{DC4A9A53-FC87-463A-96CD-E9335A956CED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuauConsole", "QuauConsole\QuauConsole.csproj", "{B455F1F1-5B17-40A8-B525-25397DD8C097}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +19,16 @@ Global
 		{B9A67804-25EC-47D6-A263-DEEEF49B9502}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9A67804-25EC-47D6-A263-DEEEF49B9502}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9A67804-25EC-47D6-A263-DEEEF49B9502}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B455F1F1-5B17-40A8-B525-25397DD8C097}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B455F1F1-5B17-40A8-B525-25397DD8C097}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B455F1F1-5B17-40A8-B525-25397DD8C097}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B455F1F1-5B17-40A8-B525-25397DD8C097}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B455F1F1-5B17-40A8-B525-25397DD8C097} = {DC4A9A53-FC87-463A-96CD-E9335A956CED}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {74DAD762-7365-41C8-96EA-29F23588235C}
