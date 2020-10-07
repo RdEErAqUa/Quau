@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{DC4A9A53-F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuauConsole", "QuauConsole\QuauConsole.csproj", "{B455F1F1-5B17-40A8-B525-25397DD8C097}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuauWPFTest", "QuauWPFTest\QuauWPFTest.csproj", "{7C2D0B9F-F0B4-4FC7-ACA2-9ABD99083EDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,12 +25,17 @@ Global
 		{B455F1F1-5B17-40A8-B525-25397DD8C097}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B455F1F1-5B17-40A8-B525-25397DD8C097}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B455F1F1-5B17-40A8-B525-25397DD8C097}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C2D0B9F-F0B4-4FC7-ACA2-9ABD99083EDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C2D0B9F-F0B4-4FC7-ACA2-9ABD99083EDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C2D0B9F-F0B4-4FC7-ACA2-9ABD99083EDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C2D0B9F-F0B4-4FC7-ACA2-9ABD99083EDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B455F1F1-5B17-40A8-B525-25397DD8C097} = {DC4A9A53-FC87-463A-96CD-E9335A956CED}
+		{7C2D0B9F-F0B4-4FC7-ACA2-9ABD99083EDD} = {DC4A9A53-FC87-463A-96CD-E9335A956CED}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {74DAD762-7365-41C8-96EA-29F23588235C}
