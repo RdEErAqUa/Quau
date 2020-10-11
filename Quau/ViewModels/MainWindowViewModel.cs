@@ -71,9 +71,10 @@ namespace Quau.ViewModels
             {
                 Set(ref _SampleData, value);
                 DataWindowModel.SampleData = _SampleData;
-
+                GraphFunctionWindowModel.SampleData = _SampleData;
                 //Выбор выборки! Убрать отсюда в будущем и реализовать выбор выборки!
                 DataWindowModel.SelectedSampleData = _SampleData.Last();
+                GraphFunctionWindowModel.SelectedSampleData = _SampleData.Last();
             }
         }
 

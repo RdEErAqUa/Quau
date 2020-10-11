@@ -22,8 +22,21 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
+            <TabItem Header="Розбиття на класи">
+                <DataGrid ItemsSource="{Binding SelectedSampleData.SampleDivisionINClass}" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding SampleDivisionData}" Width="*" Header="x"/>
+                        <DataGridTextColumn Binding="{Binding SampleDivisionDataFrequency}" Width="*" Header="n"/>
+                        <DataGridTextColumn Binding="{Binding SampleDivisionDataRelativeFrequency}" Width="*" Header="p"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
             <TabItem Header="Незсунені кількістні характеристики">
-
+                <DataGrid ItemsSource="{Binding SelectedSampleData.SampleDivisionINClass}" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding SampleDivisionData}" Width="*" Header="x"/>
+                    </DataGrid.Columns>
+                </DataGrid>
             </TabItem>
             <TabItem Header="Оцінки параметрів розподілу">
 

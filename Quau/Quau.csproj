@@ -81,6 +81,7 @@
     </Compile>
     <Compile Include="Infrastructure\Commands\Base\Command.cs" />
     <Compile Include="Infrastructure\Commands\LambdaCommand.cs" />
+    <Compile Include="Models\Histograma\DataValueHistogram.cs" />
     <Compile Include="Models\SamplePrimaryDivisionINClass.cs" />
     <Compile Include="Models\SamplePrimaryStatisticAnalyse.cs" />
     <Compile Include="Models\SampleRanking.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="Services\FileOpenLoad\Base\IDialogService.cs" />
     <Compile Include="Services\FileOpenLoad\ReadDataService.cs" />
     <Compile Include="Services\FileOpenLoad\SaveDialogSerivce.cs" />
+    <Compile Include="Services\StatisticOperation\CreateEmpiricalData.cs" />
     <Compile Include="Services\StatisticOperation\StatisticDivisionInClass.cs" />
     <Compile Include="Services\StatisticOperation\StatisticOperationLauncher.cs" />
     <Compile Include="Services\StatisticOperation\StatisticSampleRanking.cs" />

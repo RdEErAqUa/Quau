@@ -28,7 +28,7 @@
                 <RowDefinition Height="125*" MinHeight="100"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" Grid.Column="0">
-                <v:GraphFunctionWindow/>
+                <v:GraphFunctionWindow DataContext="{Binding GraphFunctionWindowModel}"/>
             </Grid>
             <Grid Grid.Row="2" Grid.Column="0">
                 <v:DataWindow DataContext="{Binding DataWindowModel}"/>

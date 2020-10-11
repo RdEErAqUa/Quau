@@ -30,27 +30,11 @@ namespace Quau.ViewModels
 
         #endregion
 
-        #region Test : ICollection<StatisticSample> - данные о выборке
-
-        private ICollection<SampleRanking> _Test;
-
-        public ICollection<SampleRanking> Test { get => _Test; set => Set(ref _Test, value); }
-
-        #endregion
-
         /* ------------------------------------------------------------------------- */
 
         public DataWindowViewModel(MainWindowViewModel MainModel)
         {
             this.MainModel = MainModel;
-
-            Test = new List<SampleRanking> { new SampleRanking { SampleData = 0, SampleDataFrequency = 0, SampleDataRelativeFrequency = 0 } };
-            Test.Add(new SampleRanking { SampleData = 0, SampleDataFrequency = 0, SampleDataRelativeFrequency = 0 });
-            Test.Add(new SampleRanking { SampleData = 0, SampleDataFrequency = 0, SampleDataRelativeFrequency = 0 });
-            Test.Add(new SampleRanking { SampleData = 0, SampleDataFrequency = 0, SampleDataRelativeFrequency = 0 });
-            Test.Add(new SampleRanking { SampleData = 0, SampleDataFrequency = 0, SampleDataRelativeFrequency = 0 });
-            Test.Add(new SampleRanking { SampleData = 0, SampleDataFrequency = 0, SampleDataRelativeFrequency = 0 });
-            Test.Add(new SampleRanking { SampleData = 0, SampleDataFrequency = 0, SampleDataRelativeFrequency = 0 });
         }
     }
 }

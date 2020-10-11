@@ -7,7 +7,7 @@ namespace Quau.Models
         // xl
         public double SampleData { get; set; }
         //nl
-        public double SampleDataFrequency { get; set; }
+        public int SampleDataFrequency { get; set; }
         //pl
         public double SampleDataRelativeFrequency { get; set; }
     }

@@ -18,14 +18,28 @@
                 <oxy:LinearAxis Position="Left"/>
                 <oxy:LinearAxis Position="Bottom"/>
             </oxy:Plot.Axes>
-            <oxy:LineSeries Color="Blue"/>
+            <oxy:StairStepSeries Color="Black"
+                              ItemsSource="{Binding SelectedSampleData.SampleDivisionINClass}"
+                                                DataFieldX="SampleDivisionData"
+                                                DataFieldY="SampleDivisionDataRelativeFrequency"/>
+            <oxy:LinearBarSeries Color="Black"
+                              ItemsSource="{Binding SelectedSampleData.SampleDivisionINClass}"
+                                                DataFieldX="SampleDivisionData"
+                                                DataFieldY="SampleDivisionDataRelativeFrequency"/>
         </oxy:Plot>
         <oxy:Plot Grid.Row="0" Grid.Column="1">
             <oxy:Plot.Axes>
                 <oxy:LinearAxis Position="Left"/>
                 <oxy:LinearAxis Position="Bottom"/>
             </oxy:Plot.Axes>
-            <oxy:LineSeries Color="Blue"/>
+            <oxy:StairStepSeries Color="Black"
+                              ItemsSource="{Binding HistogramDataValue}"
+                                                DataFieldX="x"
+                                                DataFieldY="p"/>
+            <oxy:LinearBarSeries Color="Black"
+                              ItemsSource="{Binding HistogramDataValue}"
+                                                DataFieldX="x"
+                                                DataFieldY="p"/>
         </oxy:Plot>
     </Grid>
 </UserControl>

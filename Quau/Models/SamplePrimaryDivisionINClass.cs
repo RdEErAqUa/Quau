@@ -4,15 +4,13 @@ namespace Quau.Models
 {
     internal class SamplePrimaryDivisionINClass
     {
-        //M - class count
-        public double ClassSize { get; set; }
         //xi
-        public ICollection<double> SampleDivisionData { get; set; }
+        public double SampleDivisionData { get; set; }
 
         //ni - ni - количество елементов от [xi; x(i+1)]
-        public ICollection<double> SampleDivisionDataFrequency { get; set; }
+        public int SampleDivisionDataFrequency { get; set; }
 
         //pi
-        public ICollection<double> SampleDivisionDataRelativeFrequency { get; set; }
+        public double SampleDivisionDataRelativeFrequency { get; set; }
     }
 }
