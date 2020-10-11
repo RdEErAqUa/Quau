@@ -7,9 +7,15 @@
         xmlns:vm="clr-namespace:Quau.ViewModels"
         xmlns:v="clr-namespace:Quau.Views"
         Title="MainWindow" Height="450" Width="800">
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="Файл"/>
+            <MenuItem Header="Файл">
+                <MenuItem Header="Вибрати файл" Command="{Binding GetFileName}"/>
+            </MenuItem>
+            <MenuItem Header="Параметри"/>
         </Menu>
 
         <StatusBar DockPanel.Dock="Bottom">
@@ -23,6 +29,9 @@
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" Grid.Column="0">
                 <v:GraphFunctionWindow/>
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="0">
+                <v:DataWindow DataContext="{Binding DataWindowModel}"/>
             </Grid>
             <GridSplitter Grid.Row="1" ShowsPreview="False" Height="3"
         VerticalAlignment="Center" HorizontalAlignment="Stretch"  />

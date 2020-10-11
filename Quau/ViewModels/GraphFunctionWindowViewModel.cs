@@ -9,5 +9,11 @@ namespace Quau.ViewModels
 {
     internal class GraphFunctionWindowViewModel : ViewModel
     {
+        public MainWindowViewModel MainModel { get; }
+
+        public GraphFunctionWindowViewModel(MainWindowViewModel MainModel)
+        {
+            this.MainModel = MainModel;
+        }
     }
 }
