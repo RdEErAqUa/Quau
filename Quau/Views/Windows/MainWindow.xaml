@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Quau"
         xmlns:vm="clr-namespace:Quau.ViewModels"
+        xmlns:v="clr-namespace:Quau.Views"
         Title="MainWindow" Height="450" Width="800">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -16,10 +17,13 @@
         </StatusBar>
         <Grid RenderTransformOrigin="0.506,0.612">
             <Grid.RowDefinitions>
-                <RowDefinition Height="276*"></RowDefinition>
+                <RowDefinition Height="276*" MinHeight="200"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="125*"></RowDefinition>
+                <RowDefinition Height="125*" MinHeight="100"></RowDefinition>
             </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Grid.Column="0">
+                <v:GraphFunctionWindow/>
+            </Grid>
             <GridSplitter Grid.Row="1" ShowsPreview="False" Height="3"
         VerticalAlignment="Center" HorizontalAlignment="Stretch"  />
         </Grid>
