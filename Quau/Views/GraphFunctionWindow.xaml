@@ -26,6 +26,10 @@
                               ItemsSource="{Binding SelectedSampleData.SampleDivisionINClass}"
                                                 DataFieldX="SampleDivisionData"
                                                 DataFieldY="SampleDivisionDataRelativeFrequency"/>
+            <oxy:LineSeries Color="Red"
+                              ItemsSource="{Binding SelectedSampleData.DistributionSample}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
         </oxy:Plot>
         <oxy:Plot Grid.Row="0" Grid.Column="1">
             <oxy:Plot.Axes>
@@ -40,6 +44,10 @@
                               ItemsSource="{Binding HistogramDataValue}"
                                                 DataFieldX="x"
                                                 DataFieldY="p"/>
+            <oxy:LineSeries Color="Red"
+                              ItemsSource="{Binding SelectedSampleData.DistributionSampleEmpirical}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
         </oxy:Plot>
     </Grid>
 </UserControl>

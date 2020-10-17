@@ -14,11 +14,17 @@ namespace Quau.Services.StatisticOperation
         {
             List<DataValueHistogram> answer = new List<DataValueHistogram> { };
 
-            double pz = 0;
+            double pz = valueSample.SampleDivisionINClass.First().SampleDivisionDataRelativeFrequency;
+
+            answer.Add(new DataValueHistogram { x = valueSample.SampleDivisionINClass.First().SampleDivisionData, p = pz });
             foreach (var el in valueSample.SampleDivisionINClass)
             {
-                answer.Add(new DataValueHistogram { x = el.SampleDivisionData, p = pz });
-                pz += el.SampleDivisionDataRelativeFrequency;
+                if (el == valueSample.SampleDivisionINClass.First()) ;
+                else
+                {
+                    pz += el.SampleDivisionDataRelativeFrequency;
+                    answer.Add(new DataValueHistogram { x = el.SampleDivisionData, p = pz });
+                }
             }
 
             return answer;

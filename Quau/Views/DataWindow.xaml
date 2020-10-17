@@ -32,9 +32,10 @@
                 </DataGrid>
             </TabItem>
             <TabItem Header="Незсунені кількістні характеристики">
-                <DataGrid ItemsSource="{Binding SelectedSampleData.SampleDivisionINClass}" AutoGenerateColumns="False">
+                <DataGrid ItemsSource="{Binding SelectedSampleData.DistributionSample}" AutoGenerateColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding SampleDivisionData}" Width="*" Header="x"/>
+                        <DataGridTextColumn Binding="{Binding X}" Width="*" Header="X"/>
+                        <DataGridTextColumn Binding="{Binding Y}" Width="*" Header="Y"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>

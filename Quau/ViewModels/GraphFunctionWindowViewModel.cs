@@ -27,7 +27,10 @@ namespace Quau.ViewModels
             get => _SelectedSampleData; set
             {
                 Set(ref _SelectedSampleData, value);
-                HistogramDataValue = CreateEmpiricalData.CreateEmpiricalDataValue(_SelectedSampleData);
+                if (SelectedSampleData != null)
+                    HistogramDataValue = CreateEmpiricalData.CreateEmpiricalDataValue(_SelectedSampleData);
+                else
+                    HistogramDataValue = null;
             }
         }
 
@@ -36,7 +39,7 @@ namespace Quau.ViewModels
 
         private ICollection<StatisticSample> _SampleData;
 
-        public ICollection<StatisticSample> SampleData {get => _SampleData; set => Set(ref _SampleData, value);}
+        public ICollection<StatisticSample> SampleData {get => _SampleData; set { Set(ref _SampleData, value); } }
 
         #endregion
 

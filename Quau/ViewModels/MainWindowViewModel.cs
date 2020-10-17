@@ -3,6 +3,7 @@ using Quau.Models;
 using Quau.Services;
 using Quau.Services.FileOpenLoad;
 using Quau.Services.StatisticOperation;
+using Quau.Services.StatisticOperation.DistributionCalculate;
 using Quau.ViewModels.Base;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,16 @@ namespace Quau.ViewModels
 
         private StatisticSample _SelectedSampleData;
 
-        public StatisticSample SelectedSampleData { get => _SelectedSampleData; set => Set(ref _SelectedSampleData, value); }
+        public StatisticSample SelectedSampleData
+        {
+            get => _SelectedSampleData; set
+            {
+                Set(ref _SelectedSampleData, value);
+
+                DataWindowModel.SelectedSampleData = SelectedSampleData;
+                GraphFunctionWindowModel.SelectedSampleData = SelectedSampleData;
+            }
+        }
 
         #endregion
 
@@ -49,13 +59,21 @@ namespace Quau.ViewModels
 
                 tempSample.Sample = DataConvertor.DataConvertorStrToDouble(ReadDataService.ReadData(_SampleFilePath));
 
-                StatisticOperationLauncher.StartStatisticOperation(tempSample);
-                var tempCollection = SampleData;
-                if (tempCollection == null)
-                    tempCollection = new List<StatisticSample> { };
-                tempCollection.Add(tempSample);
+                if (tempSample.Sample != null)
+                {
 
-                SampleData = tempCollection;
+                    StatisticOperationLauncher.StartStatisticOperation(tempSample);
+                    QuantitiveCharacteristicsService.QuantitiveCharacteristics(tempSample);
+                    var tempCollection = SampleData;
+                    if (tempCollection == null)
+                        tempCollection = new List<StatisticSample> { };
+                    tempCollection.Add(tempSample);
+
+                    SampleData = tempCollection;
+
+                    // Временное хранилище для Скопированой выбраной выборки
+                    SampleDataCopy = tempSample;
+                }
             }
         }
 
@@ -70,13 +88,23 @@ namespace Quau.ViewModels
             get => _SampleData; set
             {
                 Set(ref _SampleData, value);
+                SelectedSampleData = _SampleData?.Last();
                 DataWindowModel.SampleData = _SampleData;
                 GraphFunctionWindowModel.SampleData = _SampleData;
                 //Выбор выборки! Убрать отсюда в будущем и реализовать выбор выборки!
-                DataWindowModel.SelectedSampleData = _SampleData.Last();
-                GraphFunctionWindowModel.SelectedSampleData = _SampleData.Last();
+
+                //DataWindowModel.SelectedSampleData = _SampleData?.Last();
+                //GraphFunctionWindowModel.SelectedSampleData = _SampleData?.Last();
             }
         }
+
+        #endregion
+
+        #region SampleDataCopy : ICollection<StatisticSample> - сохраненные данные о выборке(для возвращение SampleData начальной позиции
+
+        private StatisticSample _SampleDataCopy;
+
+        public StatisticSample SampleDataCopy { get => _SampleDataCopy; set => Set(ref _SampleDataCopy, value); }
 
         #endregion
 
@@ -101,6 +129,60 @@ namespace Quau.ViewModels
         }
         #endregion
 
+        #region  DistributionStart - Выбор файла, путь к которому записывается в SampleFilePath
+        public ICommand DistributionStart { get; }
+
+        private bool CanDistributionStartExecute(object p)
+        {
+            return true;
+        }
+
+        private void OnDistributionStartExecuted(object p)
+        {
+            if(SampleData == null) { 
+            }
+            else if ((string)p == "0") {
+                var test = DistributionService.NormalDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                var test2 = DistributionService.NormalDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                SelectedSampleData = null;
+                SelectedSampleData = test;
+            }
+            else if ((string)p == "1")
+            {
+                var test = DistributionService.ExponentialDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                var test2 = DistributionService.ExponentialDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                SelectedSampleData = null;
+                SelectedSampleData = test;
+            }
+            else if ((string)p == "2")
+            {
+                var test = DistributionService.EvenDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                var test2 = DistributionService.EvenDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                SelectedSampleData = null;
+                SelectedSampleData = test;
+            }
+            else if ((string)p == "3")
+            {
+                var test = DistributionService.VWeibullDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                var test2 = DistributionService.VWeibullDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                SelectedSampleData = null;
+                SelectedSampleData = test;
+            }
+            else if ((string)p == "4")
+            {
+                var test = DistributionService.ArcSinDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                var test2 = DistributionService.ArcSinDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+
+                SelectedSampleData = null;
+                SelectedSampleData = test;
+            }
+            else if ((string)p == "5")
+            {
+                SelectedSampleData = SampleDataCopy;
+            }
+        }
+        #endregion
+
         #endregion
         public MainWindowViewModel()
         {
@@ -109,6 +191,8 @@ namespace Quau.ViewModels
             DataWindowModel = new DataWindowViewModel(this);
 
             GetFileName = new LambdaCommand(OnGetFileNameExecuted, CanGetFileNameExecute);
+
+            DistributionStart = new LambdaCommand(OnDistributionStartExecuted, CanDistributionStartExecute);
         }
     }
 }

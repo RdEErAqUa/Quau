@@ -15,6 +15,14 @@
             <MenuItem Header="Файл">
                 <MenuItem Header="Вибрати файл" Command="{Binding GetFileName}"/>
             </MenuItem>
+            <MenuItem Header="Тип розподілу">
+                <MenuItem Header="Нормальний" Command="{Binding DistributionStart}" CommandParameter="0"/>
+                <MenuItem Header="Експоненціальний" Command="{Binding DistributionStart}" CommandParameter="1"/>
+                <MenuItem Header="Рівномірний" Command="{Binding DistributionStart}" CommandParameter="2"/>
+                <MenuItem Header="Вейбулла" Command="{Binding DistributionStart}" CommandParameter="3"/>
+                <MenuItem Header="Косинуса" Command="{Binding DistributionStart}" CommandParameter="4"/>
+                <MenuItem Header="Початковий розподіл" Command="{Binding DistributionStart}" CommandParameter="5"/>
+            </MenuItem>
             <MenuItem Header="Параметри"/>
         </Menu>
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Quau.Models.DistributionSet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,5 +21,11 @@ namespace Quau.Models
         public ICollection<SampleRanking> SampleDataRanking { get; set; }
 
         public ICollection<SamplePrimaryDivisionINClass> SampleDivisionINClass { get; set; }
+
+        public ICollection<unShiftedShiftedQuantitiveCharacteristics> QuantitiveCharactacteristics { get; set; }
+
+        public ICollection<DistributionSamples> DistributionSample { get; set; }
+
+        public ICollection<DistributionSamples> DistributionSampleEmpirical { get; set; }
     }
 }

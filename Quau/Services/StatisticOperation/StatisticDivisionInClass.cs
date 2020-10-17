@@ -97,8 +97,10 @@ namespace Quau.Services.StatisticOperation
                 {
                     if (i + 1 >= xDivision.Count)
                     {
-                        count += valueSample.SampleDataRanking.Last().SampleDataFrequency;
-                        break;
+                        if(xDivision[i] == valueSample.SampleDataRanking.Last().SampleData)
+                        {
+                            count += valueSample.SampleDataRanking.Last().SampleDataFrequency;
+                        }
                     }
                     else if (xDivision[i] <= el.SampleData && xDivision[i + 1] > el.SampleData)
                     {

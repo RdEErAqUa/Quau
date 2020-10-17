@@ -10,11 +10,19 @@ namespace Quau.Services
     {
         static public List<double> DataConvertorStrToDouble(string dataValue)
         {
+            char[] separator = new char[] {' ', '\n', '\r' };
             try
             {
-                return (dataValue.Split(' ').
+                dataValue = dataValue.Replace('\n',' ');
+                dataValue = dataValue.Replace('.', ',');
+                var returnValue = dataValue.Split(' ').
                         Where(x => !string.IsNullOrWhiteSpace(x)).
-                        Select(x => double.Parse(x)).ToArray().ToList());
+                        Select(x => double.Parse(x)).ToArray().ToList();
+                returnValue.Sort();
+
+                var returnValue2 = dataValue.Split(separator);
+
+                return returnValue;
             }
             catch (System.FormatException)
             {
