@@ -1,4 +1,5 @@
-﻿using Quau.Models.DistributionSet;
+﻿using Quau.Models.DistributionConsent;
+using Quau.Models.DistributionSet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,5 +28,7 @@ namespace Quau.Models
         public ICollection<DistributionSamples> DistributionSample { get; set; }
 
         public ICollection<DistributionSamples> DistributionSampleEmpirical { get; set; }
+
+        public ICollection<DistributionConsentTest> DistributionConsentTests { get; set; }
     }
 }

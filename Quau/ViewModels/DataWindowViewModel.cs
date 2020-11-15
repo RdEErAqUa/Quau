@@ -18,7 +18,7 @@ namespace Quau.ViewModels
 
         private StatisticSample _SelectedSampleData;
 
-        public StatisticSample SelectedSampleData { get => _SelectedSampleData; set => Set(ref _SelectedSampleData, value); }
+        public StatisticSample SelectedSampleData { get => _SelectedSampleData; set => Set(ref _SelectedSampleData, value, true); }
 
         #endregion
 
@@ -26,7 +26,7 @@ namespace Quau.ViewModels
 
         private ICollection<StatisticSample> _SampleData;
 
-        public ICollection<StatisticSample> SampleData { get => _SampleData; set { Set(ref _SampleData, value);} }
+        public ICollection<StatisticSample> SampleData { get => _SampleData; set { Set(ref _SampleData, value, true);} }
 
         #endregion
 

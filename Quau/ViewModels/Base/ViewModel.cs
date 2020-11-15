@@ -14,9 +14,9 @@ namespace Quau.ViewModels.Base
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
         }
 
-        protected virtual bool Set<T>(ref T field, T value, [CallerMemberName] string PropertyName = null)
+        protected virtual bool Set<T>(ref T field, T value, bool doForce = false, [CallerMemberName] string PropertyName = null)
         {
-            if (Equals(field, value)) return false;
+            if (Equals(field, value) && !doForce) return false;
             field = value;
             OnPropertyChanged(PropertyName);
             return true;

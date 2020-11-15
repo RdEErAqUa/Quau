@@ -1,4 +1,6 @@
-﻿using Quau.Models;
+﻿using Quau.Data.ConsentTest;
+using Quau.Models;
+using Quau.Models.DistributionConsent;
 using Quau.Models.Histograma;
 using Quau.Services.StatisticOperation;
 using Quau.ViewModels.Base;
@@ -26,9 +28,11 @@ namespace Quau.ViewModels
         {
             get => _SelectedSampleData; set
             {
-                Set(ref _SelectedSampleData, value);
+                Set(ref _SelectedSampleData, value, true);
                 if (SelectedSampleData != null)
+                {
                     HistogramDataValue = CreateEmpiricalData.CreateEmpiricalDataValue(_SelectedSampleData);
+                }
                 else
                     HistogramDataValue = null;
             }
@@ -39,7 +43,7 @@ namespace Quau.ViewModels
 
         private ICollection<StatisticSample> _SampleData;
 
-        public ICollection<StatisticSample> SampleData {get => _SampleData; set { Set(ref _SampleData, value); } }
+        public ICollection<StatisticSample> SampleData {get => _SampleData; set { Set(ref _SampleData, value, true); } }
 
         #endregion
 
@@ -47,7 +51,7 @@ namespace Quau.ViewModels
 
         private ICollection<DataValueHistogram> _HistogramDataValue;
 
-        public ICollection<DataValueHistogram> HistogramDataValue { get => _HistogramDataValue; set => Set(ref _HistogramDataValue, value); }
+        public ICollection<DataValueHistogram> HistogramDataValue { get => _HistogramDataValue; set => Set(ref _HistogramDataValue, value, true); }
 
         #endregion
         #endregion

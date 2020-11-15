@@ -23,6 +23,11 @@
                 <MenuItem Header="Косинуса" Command="{Binding DistributionStart}" CommandParameter="4"/>
                 <MenuItem Header="Початковий розподіл" Command="{Binding DistributionStart}" CommandParameter="5"/>
             </MenuItem>
+            <MenuItem Header="Вилучення аномальних данних">
+                <MenuItem Header="Зсув" Command="{Binding AnomalyDataRemove}" CommandParameter="0"/>
+                <MenuItem Header="Стандартизування" Command="{Binding AnomalyDataRemove}" CommandParameter="1"/>
+                <MenuItem Header="Логарифмування" Command="{Binding AnomalyDataRemove}" CommandParameter="2"/>
+            </MenuItem>
             <MenuItem Header="Параметри"/>
         </Menu>
 

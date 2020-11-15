@@ -1,8 +1,11 @@
-﻿using Quau.Infrastructure.Commands;
+﻿using Quau.Data.ConsentTest;
+using Quau.Infrastructure.Commands;
 using Quau.Models;
+using Quau.Models.DistributionConsent;
 using Quau.Services;
 using Quau.Services.FileOpenLoad;
 using Quau.Services.StatisticOperation;
+using Quau.Services.StatisticOperation.AnomalyData;
 using Quau.Services.StatisticOperation.DistributionCalculate;
 using Quau.ViewModels.Base;
 using System;
@@ -35,7 +38,7 @@ namespace Quau.ViewModels
         {
             get => _SelectedSampleData; set
             {
-                Set(ref _SelectedSampleData, value);
+                Set(ref _SelectedSampleData, value, true);
 
                 DataWindowModel.SelectedSampleData = SelectedSampleData;
                 GraphFunctionWindowModel.SelectedSampleData = SelectedSampleData;
@@ -58,22 +61,10 @@ namespace Quau.ViewModels
                 StatisticSample tempSample = new StatisticSample();
 
                 tempSample.Sample = DataConvertor.DataConvertorStrToDouble(ReadDataService.ReadData(_SampleFilePath));
+                List<StatisticSample> tempCollection = new List<StatisticSample>{ };
+                tempCollection.Add(tempSample);
 
-                if (tempSample.Sample != null)
-                {
-
-                    StatisticOperationLauncher.StartStatisticOperation(tempSample);
-                    QuantitiveCharacteristicsService.QuantitiveCharacteristics(tempSample);
-                    var tempCollection = SampleData;
-                    if (tempCollection == null)
-                        tempCollection = new List<StatisticSample> { };
-                    tempCollection.Add(tempSample);
-
-                    SampleData = tempCollection;
-
-                    // Временное хранилище для Скопированой выбраной выборки
-                    SampleDataCopy = tempSample;
-                }
+                SampleData = tempCollection;
             }
         }
 
@@ -87,7 +78,17 @@ namespace Quau.ViewModels
         {
             get => _SampleData; set
             {
-                Set(ref _SampleData, value);
+
+                StatisticSample tempSample = value.First();
+                StatisticOperationLauncher.StartStatisticOperation(tempSample);
+                QuantitiveCharacteristicsService.QuantitiveCharacteristics(tempSample);
+                var tempCollection = new List<StatisticSample> { };
+                tempCollection.Add(tempSample);
+                Set(ref _SampleData, tempCollection, true);
+
+                // Временное хранилище для Скопированой выбраной выборки
+                SampleDataCopy = tempSample;
+
                 SelectedSampleData = _SampleData?.Last();
                 DataWindowModel.SampleData = _SampleData;
                 GraphFunctionWindowModel.SampleData = _SampleData;
@@ -129,7 +130,7 @@ namespace Quau.ViewModels
         }
         #endregion
 
-        #region  DistributionStart - Выбор файла, путь к которому записывается в SampleFilePath
+        #region  DistributionStart - Распределение начать
         public ICommand DistributionStart { get; }
 
         private bool CanDistributionStartExecute(object p)
@@ -180,6 +181,42 @@ namespace Quau.ViewModels
             {
                 SelectedSampleData = SampleDataCopy;
             }
+            double Kolmogorov = KolmogorovTest.KolmogorovTest_Invoke(SelectedSampleData);
+            double Pearson = PearsonTest.PearsonTest_Invoke(SelectedSampleData);
+            SelectedSampleData.DistributionConsentTests = new List<DistributionConsentTest> { };
+
+            SelectedSampleData.DistributionConsentTests.Add(new DistributionConsentTest { KolmogorovTest = Kolmogorov, PirsonTest = Pearson });
+        }
+        #endregion
+
+        #region  AnomalyDataRemove - Извлечение аномальных данных
+        public ICommand AnomalyDataRemove { get; }
+
+        private bool CanAnomalyDataRemoveExecute(object p)
+        {
+            return true;
+        }
+
+        private void OnAnomalyDataRemoveExecuted(object p) 
+        {
+            if (SampleData == null)
+            {
+            }
+            else if ((string)p == "0")
+            {
+                var test = RemoveAnomalyData.Move(SelectedSampleData);
+                SampleData = new List<StatisticSample> { SelectedSampleData };
+            }
+            else if ((string)p == "1")
+            {
+                var test = RemoveAnomalyData.Standartization(SelectedSampleData);
+                SampleData = new List<StatisticSample> { SelectedSampleData };
+            }
+            else if ((string)p == "2")
+            {
+                var test = RemoveAnomalyData.Log(SelectedSampleData);
+                SampleData = new List<StatisticSample> { SelectedSampleData };
+            }
         }
         #endregion
 
@@ -193,6 +230,8 @@ namespace Quau.ViewModels
             GetFileName = new LambdaCommand(OnGetFileNameExecuted, CanGetFileNameExecute);
 
             DistributionStart = new LambdaCommand(OnDistributionStartExecuted, CanDistributionStartExecute);
+
+            AnomalyDataRemove = new LambdaCommand(OnAnomalyDataRemoveExecuted, CanAnomalyDataRemoveExecute);
         }
     }
 }
