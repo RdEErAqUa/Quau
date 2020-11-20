@@ -1,0 +1,353 @@
+﻿using Quau.Models;
+using Quau.Services.StatisticOperation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Quau.Data.UniformySamples
+{
+    static class UniformySamples
+    {
+        //Збіг середніх для 2 вибірок
+
+        static public double uniformyAverage(ICollection<StatisticSample> values, bool isDependent = false)
+        {
+            double answerT = 0;
+
+            if (values.Count != 2)
+                return 0;
+
+            if (!isDependent)
+            {
+                //Independent 
+                double deltaX = values.ElementAt(0).QuantitiveCharactacteristics.ElementAt(0).AitherticMean;
+                double deltaY = values.ElementAt(1).QuantitiveCharactacteristics.ElementAt(0).AitherticMean;
+
+                double SX2 = values.ElementAt(0).QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare;
+                double SY2 = values.ElementAt(1).QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare;
+
+                return ((deltaX - deltaY) / (Math.Sqrt((Math.Pow(SX2, 2.0) / values.ElementAt(0).Sample.Count) + (Math.Pow(SY2, 2.0) / values.ElementAt(1).Sample.Count))));
+            }
+            else
+            {
+                //Dependent
+                List<double> zL = new List<double> { };
+
+                for (int i = 0; i < values.ElementAt(0).Sample.Count; i++)
+                {
+                    zL.Add(values.ElementAt(0).Sample.ElementAt(i) - values.ElementAt(1).Sample.ElementAt(i));
+                }
+
+                double deltaZ = 0;
+
+                foreach (var el in zL)
+                    deltaZ += el;
+                deltaZ *= (1 / zL.Count);
+
+                double SZ2 = 0;
+
+                foreach (var el in zL)
+                    SZ2 += Math.Pow(el - deltaZ, 2.0);
+                SZ2 *= (1 / (zL.Count - 1));
+
+                if (SZ2 == 0)
+                    return 0;
+                else
+                    return (deltaZ * Math.Sqrt(zL.Count) / Math.Sqrt(SZ2));
+            }
+
+
+        }
+
+        static public double uniformyVariances(ICollection<StatisticSample> values)
+        {
+            if (values.Count == 2)
+            {
+                double SX = values.ElementAt(0).QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare;
+                double SY = values.ElementAt(1).QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare;
+                if (Math.Pow(SX, 2.0) > Math.Pow(SY, 2.0))
+                    return (Math.Pow(SX, 2.0) / Math.Pow(SY, 2.0));
+                else
+                    return (Math.Pow(SY, 2.0) / Math.Pow(SX, 2.0));
+            }
+            else //Критерій Бартлетта
+            {
+                double S1 = 0, deltaN = 0;
+                foreach (var el in values)
+                {
+                    S1 += ((el.Sample.Count - 1) * el.QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare);
+                    deltaN += (el.Sample.Count - 1);
+                }
+                double S = S1 / deltaN;
+
+                double B = 0;
+                double C = 0;
+
+                foreach (var el in values)
+                {
+                    B += ((el.Sample.Count - 1) * Math.Log(Math.Pow(el.QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare, 2.0) / Math.Pow(S, 2.0)));
+
+                    C += (1.0 / (el.Sample.Count - 1));
+                }
+                B = -B;
+                C -= (1.0 / deltaN);
+                C *= (1.0 / (3 * values.Count - 3));
+                C = 1 + C;
+
+                return B / C;
+
+            }
+        }
+
+        static private List<double> RankCount(List<double> newSample)
+        {
+            List<double> Rank = new List<double> { };
+            List<double> tempValue = new List<double> { };
+            for (int i = 0; i < newSample.Count; i++)
+            {
+                if (!tempValue.Contains(newSample[i]))
+                {
+                    tempValue.Add(newSample[i]);
+                    double countSize = 0;
+                    double z = 0;
+                    int k = 0;
+                    for (k = i; k < newSample.Count; k++)
+                    {
+                        if (newSample[k] == newSample[i])
+                        {
+                            countSize += 1.0;
+                            z += ((double)k + 1.0);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    for (int f = i; f < k; f++)
+                    {
+                        Rank.Add((z / countSize));
+                    }
+                }
+            }
+            return Rank;
+        }
+        static private Dictionary<double, double> RankForEveryValue(List<double> Rank, List<double> FullSample)
+        {
+            Dictionary<double, double> answerValue = new Dictionary<double, double> { };
+            List<double> tempValue = new List<double> { };
+            for (int i = 0; i < FullSample.Count; i++)
+            {
+                if (!tempValue.Contains(FullSample[i]))
+                {
+                    answerValue.Add(FullSample[i], Rank[i]);
+                    tempValue.Add(FullSample[i]);
+                }
+            }
+            return answerValue;
+        }
+        static public double uniformyWilkson(ICollection<StatisticSample> values)
+        {
+            if (values.Count != 2)
+                return 0;
+            List<double> newSample = new List<double> { };
+
+            foreach (var el in values.ElementAt(0).Sample)
+                newSample.Add(el);
+            foreach (var el in values.ElementAt(1).Sample)
+                newSample.Add(el);
+
+            newSample.Sort();
+            List<double> Rank = RankCount(newSample);
+
+            Dictionary<double, double> RankPerElement = RankForEveryValue(Rank, newSample);
+
+            double W = 0;
+
+            foreach (var el in values.ElementAt(0).Sample)
+                W += RankPerElement[el];
+
+            double EW = (values.ElementAt(0).Sample.Count * (newSample.Count + 1)) / 2;
+            double DW = (values.ElementAt(0).Sample.Count * values.ElementAt(1).Sample.Count * (newSample.Count + 1)) / 12;
+
+            double w = ((W - EW) / Math.Sqrt(DW));
+
+            return w;
+        }
+
+        static public double uniformyMannaWhitney(ICollection<StatisticSample> values)
+        {
+            List<double> newSample = new List<double> { };
+
+            foreach (var el in values.ElementAt(0).Sample)
+                newSample.Add(el);
+            foreach (var el in values.ElementAt(1).Sample)
+                newSample.Add(el);
+
+            newSample.Sort();
+            List<double> Rank = RankCount(newSample);
+
+            Dictionary<double, double> RankPerElement = RankForEveryValue(Rank, newSample);
+
+            double W = 0;
+
+            foreach (var el in values.ElementAt(0).Sample)
+                W += RankPerElement[el];
+            //
+
+            double U = (values.ElementAt(0).Sample.Count * values.ElementAt(1).Sample.Count) + (values.ElementAt(0).Sample.Count * ((values.ElementAt(0).Sample.Count - 1)) / 2) - W;
+
+            double EU = (values.ElementAt(0).Sample.Count * values.ElementAt(1).Sample.Count) / 2;
+
+            double DU = (values.ElementAt(0).Sample.Count * values.ElementAt(1).Sample.Count * (newSample.Count)) / 2;
+
+            return ((U - EU) / Math.Sqrt(DU));
+
+
+        }
+
+        static public double uniformyMiddleRanking(ICollection<StatisticSample> values)
+        {
+            List<double> newSample = new List<double> { };
+
+            foreach (var el in values.ElementAt(0).Sample)
+                newSample.Add(el);
+            foreach (var el in values.ElementAt(1).Sample)
+                newSample.Add(el);
+
+            newSample.Sort();
+            List<double> Rank = RankCount(newSample);
+
+            Dictionary<double, double> RankPerElement = RankForEveryValue(Rank, newSample);
+
+            double rankX = 0;
+            double rankY = 0;
+
+            foreach (var el in values.ElementAt(0).Sample)
+                rankX += RankPerElement[el];
+            foreach (var el in values.ElementAt(1).Sample)
+                rankY += RankPerElement[el];
+
+            rankX *= (1.0 / values.ElementAt(0).Sample.Count);
+            rankY *= (1.0 / values.ElementAt(1).Sample.Count);
+            return (rankX - rankY) / (newSample.Count * Math.Sqrt((newSample.Count + 1.0) / (12.0 * (values.ElementAt(0).Sample.Count * values.ElementAt(1).Sample.Count))));
+        }
+
+        static public double uniformyAnalysisVariance(ICollection<StatisticSample> values)
+        {
+            double deltaX = 0;
+
+            double n = 0;
+
+            foreach (var el in values)
+            {
+                double f = el.Sample.Count * el.QuantitiveCharactacteristics.ElementAt(0).AitherticMean;
+                n += el.Sample.Count;
+                deltaX += f;
+            }
+
+            deltaX *= (1.0 / n);
+
+            double SM = 0;
+
+            foreach (var el in values)
+            {
+                SM += el.Sample.Count * Math.Pow((el.QuantitiveCharactacteristics.ElementAt(0).AitherticMean - deltaX), 2.0);
+            }
+
+            SM *= (1.0 / (values.Count - 1.0));
+
+            double SB = 0;
+
+            foreach (var el in values)
+            {
+                double SBTemp = 0;
+
+                SBTemp = SBTemp + (el.Sample.Count - 1) * Math.Pow(el.QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare, 2.0);
+
+                SB += SBTemp;
+            }
+
+            SB *= (1.0 / (n - values.Count));
+
+            return SM / SB;
+        }
+
+        static public double uniformyHTest(ICollection<StatisticSample> values)
+        {
+            List<double> fullSample = new List<double> { };
+
+            foreach (var el in values)
+                foreach (var el2 in el.Sample)
+                    fullSample.Add(el2);
+            fullSample.Sort();
+            List<double> fullRank = RankCount(fullSample);
+
+            Dictionary<double, double> Rank = RankForEveryValue(fullRank, fullSample);
+
+            List<double> deltaW = new List<double> { };
+
+            foreach (var el in values)
+            {
+                double WValue = 0;
+                foreach (var el2 in el.Sample)
+                    WValue += Rank[el2];
+                deltaW.Add(WValue / (double)el.Sample.Count);
+            }
+
+            double H = 0;
+
+            for (int i = 0; i < values.Count; i++)
+            {
+                double HTemp = 0;
+                HTemp += ((Math.Pow(deltaW[i] - (fullSample.Count + 1.0) / 2.0, 2.0) /
+                    ((fullSample.Count + 1.0) * (fullSample.Count - values.ElementAt(i).Sample.Count) / (12.0 * values.ElementAt(i).Sample.Count))) *
+                    (1.0 - values.ElementAt(i).Sample.Count / fullSample.Count));
+
+                H += HTemp;
+            }
+
+            return H;
+        }
+
+        static public double uniformyKolmogorovaSmirnova(ICollection<StatisticSample> values)
+        {
+            var data1 = CreateEmpiricalData.CreateEmpiricalDataValue(values.ElementAt(0));
+
+            var data2 = CreateEmpiricalData.CreateEmpiricalDataValue(values.ElementAt(1));
+
+            double max = values.ElementAt(0).Sample.Max() > values.ElementAt(1).Sample.Max() ? values.ElementAt(1).Sample.Max() : values.ElementAt(0).Sample.Max();
+            double min = values.ElementAt(0).Sample.Min() < values.ElementAt(1).Sample.Min() ? values.ElementAt(1).Sample.Min() : values.ElementAt(0).Sample.Min();
+
+            List<double> answerValue = new List<double> { };
+
+            for(double i = 0; i < max; i += (Math.Abs(max - min)) * 0.01)
+            {
+                //Вынести в отдельную функцию
+                double x1 = 0;
+                for(int j = 0; j < data1.Count - 1; j++)
+                {
+                    if(i < data1.ElementAt(j + 1).x && i > data1.ElementAt(j).x)
+                    {
+                        x1 = data1.ElementAt(j).p;
+                    }
+                }
+
+                double x2 = 0;
+                for (int j = 0; j < data2.Count - 1; j++)
+                {
+                    if (i < data2.ElementAt(j + 1).x && i > data2.ElementAt(j).x)
+                    {
+                        x2 = data2.ElementAt(j).p;
+                    }
+                }
+                answerValue.Add(Math.Abs(x1 - x2));
+
+
+            }
+
+            return 1.0 - (1.0 - Math.Exp(-2.0 * Math.Pow(answerValue.Max(), 2.0)));
+        }
+    }
+}

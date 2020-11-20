@@ -79,8 +79,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Data\AbbeTest\AbbeTest.cs" />
     <Compile Include="Data\ConsentTest\KolmogorovTest.cs" />
     <Compile Include="Data\ConsentTest\PearsonTest.cs" />
+    <Compile Include="Data\UniformySamples\UniformySamples.cs" />
     <Compile Include="Infrastructure\Commands\Base\Command.cs" />
     <Compile Include="Infrastructure\Commands\LambdaCommand.cs" />
     <Compile Include="Models\DistributionConsent\DistributionConsentTest.cs" />
@@ -90,6 +92,7 @@
     <Compile Include="Models\SamplePrimaryStatisticAnalyse.cs" />
     <Compile Include="Models\SampleRanking.cs" />
     <Compile Include="Models\StatisticSample.cs" />
+    <Compile Include="Models\TTest.cs" />
     <Compile Include="Services\DataConvertor.cs" />
     <Compile Include="Services\FileOpenLoad\Base\IDialogService.cs" />
     <Compile Include="Services\FileOpenLoad\ReadDataService.cs" />

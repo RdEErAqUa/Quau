@@ -100,11 +100,9 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
             double AritheticMeanDouble = QuantitiveCharacteristicsService.AritheticMeanDouble(valueDoubleTemp);
             double NSize = valueDoubleTemp.Count;
 
-            double aValue = QuantitiveCharacteristicsService.CentralMoment(valueDoubleTemp, 3) / Math.Pow(QuantitiveCharacteristicsService.CentralMoment(valueDoubleTemp, 2), 3.0 / 2.0);
+            double aValue = 1;
 
-            aValue = Math.Exp(-aValue);
-
-            double bValue = 1.2;
+            double bValue = 1.5;
 
             NSize = NSize / (NSize - 1);
 
@@ -242,17 +240,16 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
             double AritheticMeanDouble = QuantitiveCharacteristicsService.AritheticMeanDouble(valueDoubleTemp);
             double LambdaValue = 1 / ArtiheticMean;
 
-            double AValue = ArtiheticMean - Math.Sqrt(3 * (AritheticMeanDouble - Math.Pow(ArtiheticMean, 2.0)));
-            double BValue = ArtiheticMean + Math.Sqrt(3 * (AritheticMeanDouble - Math.Pow(ArtiheticMean, 2.0)));
+            double AValue = 1;
+
+            double BValue = 1.5;
 
             for (int i = 0; i < valueDoubleTemp.Count; i++)
             {
                 valueDistributionSample.Add(new DistributionSamples
                 {
                     X = valueDoubleTemp.ElementAt(i),
-                    Y = valueDoubleTemp.ElementAt(i) < AValue ?
-                    0 : valueDoubleTemp.ElementAt(i) >= AValue && valueDoubleTemp.ElementAt(i) < BValue ?
-                    (valueDoubleTemp.ElementAt(i) - AValue) / (BValue - AValue) : 1
+                    Y = (1.0 - Math.Exp(-Math.Pow(valueDoubleTemp.ElementAt(i), BValue) / AValue))
                 });
             }
 

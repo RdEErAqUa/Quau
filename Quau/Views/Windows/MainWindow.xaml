@@ -28,6 +28,11 @@
                 <MenuItem Header="Стандартизування" Command="{Binding AnomalyDataRemove}" CommandParameter="1"/>
                 <MenuItem Header="Логарифмування" Command="{Binding AnomalyDataRemove}" CommandParameter="2"/>
             </MenuItem>
+            <MenuItem Header="Розрахунки">
+                <MenuItem Header="Однорідність вибірок(залежні)" Command="{Binding CheckUniformyDependent}" CommandParameter="{Binding ElementName=DataValueBox, Path=SelectedItems}"/>
+                <MenuItem Header="Однорідність вибірок(незалежні)" Command="{Binding CheckUniformy}" CommandParameter="{Binding ElementName=DataValueBox, Path=SelectedItems}"/>
+                <MenuItem Header="Аббе тест" Command="{Binding AbbeTestRun}"/>
+            </MenuItem>
             <MenuItem Header="Параметри"/>
         </Menu>
 
@@ -44,7 +49,12 @@
                 <v:GraphFunctionWindow DataContext="{Binding GraphFunctionWindowModel}"/>
             </Grid>
             <Grid Grid.Row="2" Grid.Column="0">
-                <v:DataWindow DataContext="{Binding DataWindowModel}"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="15*"/>
+                </Grid.ColumnDefinitions>
+                <ListBox x:Name="DataValueBox" ItemsSource="{Binding SampleData}" SelectedItem="{Binding SelectedSampleData}" SelectionMode="Extended" Grid.Column="0"/>
+                <v:DataWindow DataContext="{Binding DataWindowModel}" Grid.Column="1"/>
             </Grid>
             <GridSplitter Grid.Row="1" ShowsPreview="False" Height="3"
         VerticalAlignment="Center" HorizontalAlignment="Stretch"  />

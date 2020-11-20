@@ -1,10 +1,12 @@
-﻿using Quau.Models;
+﻿using Quau.Infrastructure.Commands;
+using Quau.Models;
 using Quau.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Quau.ViewModels
 {
@@ -31,9 +33,29 @@ namespace Quau.ViewModels
         #endregion
 
         /* ------------------------------------------------------------------------- */
+        #region  TTestFind - Однородность выборки зависимых
+        public ICommand TTestFind { get; }
+
+        private bool CanTTestFindExecute(object p)
+        {
+            return true;
+        }
+
+        private void OnTTestFindExecuted(object p)
+        {
+            TTest test = MainModel.TTestValue;
+
+            test.TValue = (test.value - test.newValue) / (test.delta2Value) * Math.Sqrt(test.NValue);
+
+            MainModel.TTestValue = test;
+        }
+        #endregion
+
 
         public DataWindowViewModel(MainWindowViewModel MainModel)
         {
+            TTestFind = new LambdaCommand(OnTTestFindExecuted, CanTTestFindExecute);
+
             this.MainModel = MainModel;
         }
     }
