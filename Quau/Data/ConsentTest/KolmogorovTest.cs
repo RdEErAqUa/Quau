@@ -21,8 +21,6 @@ namespace Quau.Data.ConsentTest
 
             dmax = dmaxplus;
 
-            double KolmogorovTestValue = 1;
-
             double KolmogorovValueLoop = 0;
 
             double z = Math.Sqrt(statisticSamples.SampleDataRanking.Count) * dmax;
@@ -33,13 +31,8 @@ namespace Quau.Data.ConsentTest
                 double f2 = FunctionTwoFind(i);
                 double z2 = Math.Exp(-2.0 * Math.Pow(i, 2.0) * Math.Pow(z, 2.0));
                 KolmogorovValueLoop += (Math.Pow(-1.0, i) * Math.Exp(-2.0 * Math.Pow(i, 2.0) * Math.Pow(z, 2.0)));
-                //*
-                //(1 - (2 * Math.Pow(i, 2) * z) / 3 * Math.Sqrt(statisticSamples.Sample.Count) - 1 / (18 - statisticSamples.Sample.Count)*
-                //((f1 - 4 * (f1 + 3) * Math.Pow(i, 2) * Math.Pow(z, 2) + 8 * Math.Pow(i, 4) * Math.Pow(z, 4)) +
-                //((Math.Pow(i, 2) * z) / (27 * Math.Sqrt(Math.Pow(statisticSamples.Sample.Count, 3))) *
-                //(Math.Pow(f2, 2) / 5 - (4 * (f2 + 45) * Math.Pow(i, 2) * Math.Pow(z, 2)) / 15) + 8 * Math.Pow(i, 4) * Math.Pow(z, 4)))));
             }
-            return KolmogorovValueLoop;
+            return Math.Round(KolmogorovValueLoop, 4);
         }
 
         static private double FunctionOneFind(double k)

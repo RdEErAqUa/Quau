@@ -1,34 +1,133 @@
-﻿using Quau.Models.DistributionConsent;
+﻿using Quau.Data;
+using Quau.Models.Base;
+using Quau.Models.DistributionConsent;
 using Quau.Models.DistributionSet;
+using Quau.Models.Histograma;
+using Quau.Services.StatisticOperation;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Quau.Models
 {
-    internal class StatisticSample
+    internal class StatisticSample : BaseModel
     {
         //Одновимірна вибірка
         //M - class count
-        public double ClassSize { get; set; }
-
+        #region ClassSize : double - кількість классів
+        private double _ClassSize;
+        public double ClassSize
+        {
+            get => _ClassSize; set
+            {
+                Set(ref _ClassSize, value);
+                if (RoundValue == 0)
+                {
+                    RoundValue = 3;
+                    foreach (var el in Sample)
+                    {
+                        RoundValue = DecimalData.GetDecimalDigitsCount(el) > RoundValue ? DecimalData.GetDecimalDigitsCount(el) : RoundValue;
+                    }
+                }
+                StatisticOperationLauncher.StartStatisticOperation(this);
+                QuantitiveCharacteristicsService.QuantitiveCharacteristics(this);
+                HistogramDataValue = new ObservableCollection<DataValueHistogram>(CreateEmpiricalData.CreateEmpiricalDataValue(this));
+            }
+        }
+        #endregion
         public double StepSize { get; set; }
-        public ICollection<double> Sample { get; set; }
 
-        public SamplePrimaryStatisticAnalyse SamplePrimaryAnalyse { get; set; }
+        public string fileName { get; set; }
 
-        public ICollection<SampleRanking> SampleDataRanking { get; set; }
+        public int RoundValue { get; set; }
+        //
+        #region Sample : ObservableCollection<double> - колекція вхідних даних
+        private ObservableCollection<double> _Sample;
+        public ObservableCollection<double> Sample
+        {
+            get => _Sample; set
+            {
+                Set(ref _Sample, value);
+                ClassSize = Math.Ceiling(StatisticDivisionInClass.SizeClassesFind(this));
+            }
+        }
+        #endregion
+        //
+        #region SampleDataRanking : ObservableCollection<SampleRanking> - варіаційний ряд
+        private ObservableCollection<SampleRanking> _SampleDataRanking;
+        public ObservableCollection<SampleRanking> SampleDataRanking
+        {
+            get => _SampleDataRanking; set
+            {
+                Set(ref _SampleDataRanking, value);
+            }
+        }
+        #endregion
+        //
+        #region SampleDivisionINClass : ObservableCollection<SamplePrimaryDivisionINClass> - розбиття на класи
+        private ObservableCollection<SamplePrimaryDivisionINClass> _SampleDaSampleDivisionINClass;
+        public ObservableCollection<SamplePrimaryDivisionINClass> SampleDivisionINClass
+        {
+            get => _SampleDaSampleDivisionINClass; set
+            {
+                Set(ref _SampleDaSampleDivisionINClass, value);
+            }
+        }
+        #endregion
+        //
+        #region QuantitiveCharactacteristics : unShiftedShiftedQuantitiveCharacteristics - оцінки параметрів
+        private unShiftedShiftedQuantitiveCharacteristics _QuantitiveCharactacteristics;
+        public unShiftedShiftedQuantitiveCharacteristics QuantitiveCharactacteristics { get => _QuantitiveCharactacteristics; set => Set(ref _QuantitiveCharactacteristics, value); }
+        #endregion
+        //
+        #region DistributionSample : ObservableCollection<DistributionSamples> - функція щільності
+        private ObservableCollection<DistributionSamples> _DistributionSample;
+        public ObservableCollection<DistributionSamples> DistributionSample
+        {
+            get => _DistributionSample; set
+            {
+                Set(ref _DistributionSample, value);
+            }
+        }
+        #endregion
+        //
+        #region DistributionSampleEmpirical : ObservableCollection<DistributionSamples> - функція ймовірностей
+        private ObservableCollection<DistributionSamples> _DistributionSampleEmpirical;
+        public ObservableCollection<DistributionSamples> DistributionSampleEmpirical
+        {
+            get => _DistributionSampleEmpirical; set
+            {
+                Set(ref _DistributionSampleEmpirical, value);
+            }
+        }
+        #endregion
+        //
+        #region HistogramDataValue : ICollection<DataValueHistogram> - данные о эмпирической функции распределения
 
-        public ICollection<SamplePrimaryDivisionINClass> SampleDivisionINClass { get; set; }
+        private ObservableCollection<DataValueHistogram> _HistogramDataValue;
 
-        public ICollection<unShiftedShiftedQuantitiveCharacteristics> QuantitiveCharactacteristics { get; set; }
+        public ObservableCollection<DataValueHistogram> HistogramDataValue { get => _HistogramDataValue; set => Set(ref _HistogramDataValue, value); }
 
-        public ICollection<DistributionSamples> DistributionSample { get; set; }
+        #endregion
+        //
+        #region DistributionProtocol : String - протокол довірчого інтервального оцінювання, та оцінок параметрів розподілу
 
-        public ICollection<DistributionSamples> DistributionSampleEmpirical { get; set; }
+        private String _DistributionProtocol;
 
-        public ICollection<DistributionConsentTest> DistributionConsentTests { get; set; }
+        public String DistributionProtocol { get => _DistributionProtocol; set => Set(ref _DistributionProtocol, value); }
+
+        #endregion
+        //
+        #region IntervalProtocol : String - протокол довірчого інтервального оцінювання
+
+        private String _IntervalProtocol;
+
+        public String IntervalProtocol { get => _IntervalProtocol; set => Set(ref _IntervalProtocol, value); }
+
+        #endregion
+        public DistributionConsentTest DistributionConsentTests { get; set; }
     }
 }

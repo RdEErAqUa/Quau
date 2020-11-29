@@ -1,6 +1,7 @@
 ﻿using Quau.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,8 +14,6 @@ namespace Quau.Services.StatisticOperation
         {
             ICollection<SamplePrimaryDivisionINClass> SampleDivisionData = new List<SamplePrimaryDivisionINClass> { };
             //
-            double SizeClasses = SizeClassesFind(valueSample);
-            valueSample.ClassSize = SizeClasses;
             //
             List<double> xDivision = FindXDivision(valueSample);
 
@@ -29,15 +28,15 @@ namespace Quau.Services.StatisticOperation
             for (int i = 0; i < xDivision.Count; i++) SampleDivisionData.Add(
                  new SamplePrimaryDivisionINClass
                  {
-                     SampleDivisionData = xDivision[i],
+                     SampleDivisionData = Math.Round(xDivision[i], valueSample.RoundValue),
                      SampleDivisionDataFrequency = xDivisionFrequency[i],
-                     SampleDivisionDataRelativeFrequency = RelativeFrequencyDivision[i]
+                     SampleDivisionDataRelativeFrequency = Math.Round(RelativeFrequencyDivision[i], valueSample.RoundValue)
                  });
 
-            valueSample.SampleDivisionINClass = SampleDivisionData;
+            valueSample.SampleDivisionINClass = new ObservableCollection<SamplePrimaryDivisionINClass>(SampleDivisionData);
         }
 
-        static private double SizeClassesFind(StatisticSample valueSample)
+        static public double SizeClassesFind(StatisticSample valueSample)
         {
 
             if (valueSample.Sample.Count < 100)
@@ -73,15 +72,13 @@ namespace Quau.Services.StatisticOperation
 
             double stepSize = (valueSample.SampleDataRanking.Last().SampleData - valueSample.SampleDataRanking.First().SampleData) / (valueSample.ClassSize);
 
-            valueSample.ClassSize = Math.Ceiling(valueSample.ClassSize);
-
             valueSample.StepSize = stepSize;
 
             for (int i = 0; i <= valueSample.ClassSize; i++)
             {
                 xDivision.Add((i) * stepSize + valueSample.SampleDataRanking.First().SampleData);
             }
-
+            xDivision[xDivision.Count - 1] += Math.Abs(valueSample.Sample.Min()) >= 1 ? 1 / valueSample.Sample.Min() : valueSample.Sample.Min() * valueSample.Sample.Min();
             return xDivision;
         }
 
@@ -100,6 +97,7 @@ namespace Quau.Services.StatisticOperation
                         if(xDivision[i] == valueSample.SampleDataRanking.Last().SampleData)
                         {
                             count += valueSample.SampleDataRanking.Last().SampleDataFrequency;
+                            break;
                         }
                     }
                     else if (xDivision[i] <= el.SampleData && xDivision[i + 1] > el.SampleData)

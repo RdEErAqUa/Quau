@@ -1,17 +1,21 @@
 ﻿using Quau.Data.AbbeTest;
 using Quau.Data.ConsentTest;
+using Quau.Data.Modeling;
 using Quau.Data.UniformySamples;
 using Quau.Infrastructure.Commands;
 using Quau.Models;
 using Quau.Models.DistributionConsent;
+using Quau.Models.ModelingSample;
 using Quau.Services;
 using Quau.Services.FileOpenLoad;
 using Quau.Services.StatisticOperation;
 using Quau.Services.StatisticOperation.AnomalyData;
 using Quau.Services.StatisticOperation.DistributionCalculate;
 using Quau.ViewModels.Base;
+using Quau.ViewModels.OptionsData;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,7 +44,7 @@ namespace Quau.ViewModels
         {
             get => _SelectedSampleData; set
             {
-                Set(ref _SelectedSampleData, value, true);
+                Set(ref _SelectedSampleData, value);
 
                 DataWindowModel.SelectedSampleData = SelectedSampleData;
                 GraphFunctionWindowModel.SelectedSampleData = SelectedSampleData;
@@ -55,7 +59,7 @@ namespace Quau.ViewModels
         {
             set
             {
-                SampleData = new List<StatisticSample> { new StatisticSample { Sample = DataConvertor.DataConvertorStrToDouble(ReadDataService.ReadData(value)) } };
+                SampleData = new List<StatisticSample> { new StatisticSample { Sample = new ObservableCollection<double>(DataConvertor.DataConvertorStrToDouble(ReadDataService.ReadData(value))), fileName = value.Split('\\').Last() } };
             }
         }
 
@@ -81,31 +85,15 @@ namespace Quau.ViewModels
 
                 if (value.Count > 0)
                 {
-                    StatisticOperationLauncher.StartStatisticOperation(value.Last());
-                    QuantitiveCharacteristicsService.QuantitiveCharacteristics(value.Last());
                     tempCollection.Add(value.Last());
 
                     Set(ref _SampleData, tempCollection);
 
-                    // Временное хранилище для Скопированой выбраной выборки
-
-                    DataWindowModel.SampleData = _SampleData;
-                    GraphFunctionWindowModel.SampleData = _SampleData;
+                    DataWindowModel.SampleData = SampleData;
+                    GraphFunctionWindowModel.SampleData = SampleData;
                 }
-                //Выбор выборки! Убрать отсюда в будущем и реализовать выбор выборки!
-
-                //DataWindowModel.SelectedSampleData = _SampleData?.Last();
-                //GraphFunctionWindowModel.SelectedSampleData = _SampleData?.Last();
             }
         }
-
-        #endregion
-
-        #region SampleDataCopy : StatisticSample - сохраненные данные о выборке(для возвращение SampleData начальной позиции
-
-        private StatisticSample _SampleDataCopy;
-
-        public StatisticSample SampleDataCopy { get => _SampleDataCopy; set => Set(ref _SampleDataCopy, value); }
 
         #endregion
 
@@ -116,15 +104,16 @@ namespace Quau.ViewModels
         public String RecordValue { get => _RecordValue; set => Set(ref _RecordValue, value); }
 
         #endregion
+
         #region TTestValue : TTest - протокол
 
         private TTest _TTestValue;
 
-        public TTest TTestValue { get => _TTestValue; set => Set(ref _TTestValue, value, true); }
+        public TTest TTestValue { get => _TTestValue; set => Set(ref _TTestValue, value); }
 
         #endregion
-
         #endregion
+
 
         /* ------------------------------------------------------------------------- */
         #region Command
@@ -155,57 +144,58 @@ namespace Quau.ViewModels
 
         private void OnDistributionStartExecuted(object p)
         {
-            if(SampleData == null) { 
-            }
-            else if ((string)p == "0") {
-                var test = DistributionService.NormalDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
-                var test2 = DistributionService.NormalDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
-                SelectedSampleData = null;
-                SelectedSampleData = test;
-            }
-            else if ((string)p == "1")
+            SelectedSampleData.DistributionProtocol = "";
+            switch (Int32.Parse((string)p))
             {
-                var test = DistributionService.ExponentialDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
-                var test2 = DistributionService.ExponentialDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
-                SelectedSampleData = null;
-                SelectedSampleData = test;
-            }
-            else if ((string)p == "2")
-            {
-                var test = DistributionService.EvenDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
-                var test2 = DistributionService.EvenDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
-                SelectedSampleData = null;
-                SelectedSampleData = test;
-            }
-            else if ((string)p == "3")
-            {
-                var test = DistributionService.VWeibullDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
-                var test2 = DistributionService.VWeibullDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
-                SelectedSampleData = null;
-                SelectedSampleData = test;
-            }
-            else if ((string)p == "4")
-            {
-                var test = DistributionService.ArcSinDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
-                var test2 = DistributionService.ArcSinDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
-
-                SelectedSampleData = null;
-                SelectedSampleData = test;
-            }
-            else if ((string)p == "5")
-            {
-                SelectedSampleData = SampleDataCopy;
+                case 0:
+                    DistributionService.NormalDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                    DistributionService.NormalDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                    SelectedSampleData.DistributionProtocol += DistributionService.NormalDistributionInterval(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                    break;
+                case 1:
+                    DistributionService.ExponentialDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                    DistributionService.ExponentialDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                    SelectedSampleData.DistributionProtocol += DistributionService.ExponentialDistributionInterval(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                    break;
+                case 2:
+                    DistributionService.EvenDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                    DistributionService.EvenDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                    SelectedSampleData.DistributionProtocol += DistributionService.EvenDistributionInterval(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                    break;
+                case 3:
+                    DistributionService.VWeibullDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                    DistributionService.VWeibullDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                    break;
+                case 4:
+                    DistributionService.ArcSinDistribution(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                    DistributionService.ArcSinDistributionEmpirical(SelectedSampleData.SampleDataRanking, SelectedSampleData);
+                    break;
+                default:
+                    return;
             }
             double Kolmogorov = KolmogorovTest.KolmogorovTest_Invoke(SelectedSampleData);
-
-            RecordValue = "";
-
-            RecordValue += $"Крітерій Колмогорова                - {Kolmogorov}\n";
             double Pearson = PearsonTest.PearsonTest_Invoke(SelectedSampleData);
-            RecordValue += $"Крітерій Пірсона                - {Pearson}\n";
-            SelectedSampleData.DistributionConsentTests = new List<DistributionConsentTest> { };
 
-            SelectedSampleData.DistributionConsentTests.Add(new DistributionConsentTest { KolmogorovTest = Kolmogorov, PirsonTest = Pearson });
+            double A = SelectedSampleData.Sample.Count < 60 ? 0.5 : 0.2;
+
+            String KolmogorovRecord = A < Kolmogorov ? $" > {A}, отже емпірична функція невідповідає теоретичному": $" < {A}, отже емпірична функція відповідаю теоретичному";
+
+            Quantiles quantiles = new Quantiles();
+
+            quantiles.XI2Quantiles();
+
+
+
+            String PearsonValue = A == 0.5 ?
+                (Math.Abs(Pearson) < quantiles.XI2_a0_5[(int)SelectedSampleData.ClassSize - 1] ? 
+                $" < {quantiles.XI2_a0_5[(int)SelectedSampleData.ClassSize - 1]}, отже емпірична функція відповідає теоретичному" : $" > {quantiles.XI2_a0_5[(int)SelectedSampleData.ClassSize - 1]}, отже емпірична функція невідповідає теоретичному") :
+                (Math.Abs(Pearson) < quantiles.XI2_a0_2[(int)SelectedSampleData.ClassSize - 1] ?
+                $" < {quantiles.XI2_a0_2[(int)SelectedSampleData.ClassSize - 1]}, отже емпірична функція відповідає теоретичному" : $" > {quantiles.XI2_a0_2[(int)SelectedSampleData.ClassSize - 1]}, отже емпірична функція невідповідає теоретичному");
+
+            SelectedSampleData.DistributionProtocol += $"\nПри a - {A}, так як кількість даних - {SelectedSampleData.Sample.Count}. Перше число в порівнянні - це критерій згоди, друге - a(для Колмогорова), квантиль XI2 - для Пірсона" +
+                $"\nКритерій згоди Колмогоров : {Kolmogorov}" + KolmogorovRecord  +  
+                $"\nКритерій згоди Пірсон(при степені вільності,v = {SelectedSampleData.ClassSize - 1}) : {Math.Abs(Pearson)}" + PearsonValue;
+            SelectedSampleData.DistributionConsentTests = new DistributionConsentTest { KolmogorovTest = Kolmogorov, PirsonTest = Pearson };
         }
         #endregion
 
@@ -217,25 +207,21 @@ namespace Quau.ViewModels
             return true;
         }
 
-        private void OnAnomalyDataRemoveExecuted(object p) 
+        private void OnAnomalyDataRemoveExecuted(object p)
         {
-            if (SampleData == null)
+            switch (Int32.Parse((string)p))
             {
-            }
-            else if ((string)p == "0")
-            {
-                var test = RemoveAnomalyData.Move(SelectedSampleData);
-                SampleData = new List<StatisticSample> { SelectedSampleData };
-            }
-            else if ((string)p == "1")
-            {
-                var test = RemoveAnomalyData.Standartization(SelectedSampleData);
-                SampleData = new List<StatisticSample> { SelectedSampleData };
-            }
-            else if ((string)p == "2")
-            {
-                var test = RemoveAnomalyData.Log(SelectedSampleData);
-                SampleData = new List<StatisticSample> { SelectedSampleData };
+                case 0:
+                    RemoveAnomalyData.Move(SelectedSampleData);
+                    break;
+                case 1:
+                    RemoveAnomalyData.Standartization(SelectedSampleData);
+                    break;
+                case 2:
+                    RemoveAnomalyData.Log(SelectedSampleData);
+                    break;
+                default:
+                    break;
             }
         }
         #endregion
@@ -260,58 +246,7 @@ namespace Quau.ViewModels
 
             RecordValue = "";
 
-            if (sizeOfValue == 2)
-            {
-                double a = 0.3;
-
-                RecordValue += $"Кількість N1 - {valuesSample.ElementAt(0).Sample.Count}, N2 - {valuesSample.ElementAt(1).Sample.Count}, де a - {a}\n";
-                //Do that
-                double uniformyAverage = UniformySamples.uniformyAverage(valuesSample, false);
-
-                RecordValue += $"Збіг середніх для вибірок  -         {uniformyAverage}, де v - {valuesSample.ElementAt(0).Sample.Count + - valuesSample.ElementAt(1).Sample.Count - 2}\n";
-
-                double uniformyVariances = UniformySamples.uniformyVariances(valuesSample);
-
-                RecordValue += $"Збіг дисперсій для вибірок -         {uniformyVariances}, де v1 - {valuesSample.ElementAt(0).Sample.Count - 1}, v2 - {valuesSample.ElementAt(1).Sample.Count - 1}\n";
-                double uniformyWilkson = UniformySamples.uniformyWilkson(valuesSample);
-
-                RecordValue += $"Критерій Вілксона          -         {uniformyWilkson}, при a - {a}\n";
-                double uniformyMannaWhitney = UniformySamples.uniformyMannaWhitney(valuesSample);
-
-                RecordValue += $"Критерій Манна-Уїзні       -         {uniformyMannaWhitney}, при a - {a}\n";
-                double uniformyMiddleRanking = UniformySamples.uniformyMiddleRanking(valuesSample);
-
-                RecordValue += $"Різниця рангів             -         {uniformyMiddleRanking}, при a - {a}\n";
-                double uniformyKolmogorovaSmirnova = UniformySamples.uniformyKolmogorovaSmirnova(valuesSample);
-
-                RecordValue += $"Колмогорова-Смірнова       -         {uniformyKolmogorovaSmirnova}\n";
-                double k = 0;
-            }
-            else if (sizeOfValue > 2)
-            {
-                //Do if
-                double a = 0.3;
-                int i = 0;
-                RecordValue += "Кількість ";
-                foreach (var el in valuesSample)
-                    RecordValue += $"N{i++} - {el.Sample.Count}, ";
-                RecordValue += $"де a - { a}\n";
-
-                double uniformyVariances = UniformySamples.uniformyVariances(valuesSample);
-
-                RecordValue += $"Збіг дисперсій для вибірок -         {uniformyVariances}, де v1 - {valuesSample.Count}\n";
-                double uniformyAnalysisVariance = UniformySamples.uniformyAnalysisVariance(valuesSample);
-
-                RecordValue += $"Одноф-дисперсійний аналіз  -         {uniformyAnalysisVariance}\n";
-                double uniformyHTest = UniformySamples.uniformyHTest(valuesSample);
-
-                RecordValue += $"H - test                   -         {uniformyHTest}\n";
-                double k = 0;
-            }
-            else
-            {
-
-            }
+            RecordValue = Uniformy.UniformyRunIndependent(valuesSample, RecordValue);
 
         }
         #endregion
@@ -334,60 +269,8 @@ namespace Quau.ViewModels
             foreach (var el in items)
                 valuesSample.Add((StatisticSample)el);
             RecordValue = "";
-            if (sizeOfValue == 2)
-            {
-                try
-                {
-                    double a = 0.3;
 
-                    RecordValue += $"Кількість N1 - {valuesSample.ElementAt(0).Sample.Count}, N2 - {valuesSample.ElementAt(1).Sample.Count}, де a - {a}\n";
-                    //Do that
-                    double uniformyAverage = UniformySamples.uniformyAverage(valuesSample, false);
-
-                    RecordValue += $"Збіг середніх для вибірок  -         {uniformyAverage}, де v - {valuesSample.ElementAt(0).Sample.Count + -valuesSample.ElementAt(1).Sample.Count - 2}\n";
-                    double uniformyWilkson = UniformySamples.uniformyWilkson(valuesSample);
-
-                    RecordValue += $"Критерій Вілксона          -         {uniformyWilkson}, при a - {a}\n";
-                    double uniformyMannaWhitney = UniformySamples.uniformyMannaWhitney(valuesSample);
-
-                    RecordValue += $"Критерій Манна-Уїзні       -         {uniformyMannaWhitney}, при a - {a}\n";
-                    double uniformyMiddleRanking = UniformySamples.uniformyMiddleRanking(valuesSample);
-
-                    RecordValue += $"Різниця рангів             -         {uniformyMiddleRanking}, при a - {a}\n";
-                    double uniformyKolmogorovaSmirnova = UniformySamples.uniformyKolmogorovaSmirnova(valuesSample);
-
-                    RecordValue += $"Колмогорова-Смірнова       -         {uniformyKolmogorovaSmirnova}\n";
-                }
-                catch (Exception e)
-                {
-                    RecordValue = $"Хибний вибір знаходження оцінки однорідності вибірки {e.Message}";
-                }
-            }
-            else if (sizeOfValue > 2)
-            {
-                //Do if
-                try
-                {
-                    double a = 0.3;
-                    int i = 0;
-                    RecordValue += "Кількість ";
-                    foreach (var el in valuesSample)
-                        RecordValue += $"N{i++} - {el.Sample.Count}, ";
-                    RecordValue += $"де a - { a}\n";
-
-                    double uniformyVariances = UniformySamples.uniformyVariances(valuesSample);
-
-                    RecordValue += $"Збіг дисперсій для вибірок -         {uniformyVariances}, де v1 - {valuesSample.Count}\n";
-                }
-                catch (Exception e)
-                {
-                    RecordValue = $"Хибний вибір знаходження оцінки однорідності вибірки {e.Message}";
-                }
-            }
-            else
-            {
-
-            }
+            RecordValue = Uniformy.UniformyRunDependent(valuesSample, RecordValue);
 
         }
         #endregion
@@ -402,7 +285,7 @@ namespace Quau.ViewModels
 
         private void OnAbbeTestRunExecuted(object p)
         {
-            if(SelectedSampleData != null)
+            if (SelectedSampleData != null)
             {
                 double u = AbbeTest.AbbeTestRun(SelectedSampleData);
 
@@ -411,12 +294,49 @@ namespace Quau.ViewModels
         }
         #endregion
 
+        #region  OpenOptionsWindow - Однородность выборки зависимых
+        public ICommand OpenOptionsWindow { get; }
+
+        private bool CanOpenOptionsWindowExecute(object p)
+        {
+            return true;
+        }
+
+        private void OnOpenOptionsWindowExecuted(object p)
+        {
+            var displayRootRegistry = (Application.Current as App).displayRootRegistry;
+
+            var otherWindowViewModel = new OptionsDataViewModel(this);
+            displayRootRegistry.ShowPresentation(otherWindowViewModel);
+        }
+        #endregion
+
+        #region  OpenOptionsWindow - Однородность выборки зависимых
+        public ICommand OpenDistributionWindow { get; }
+
+        private bool CanOpenDistributionWindowExecute(object p)
+        {
+            return true;
+        }
+
+        private void OnOpenDistributionWindowExecuted(object p)
+        {
+            var displayRootRegistry = (Application.Current as App).displayRootRegistry;
+
+            var otherWindowViewModel = new DistributionDataViewModel(this);
+            displayRootRegistry.ShowPresentation(otherWindowViewModel);
+        }
+        #endregion
         #endregion
         public MainWindowViewModel()
         {
+            SampleData = new List<StatisticSample> { };
+
+
             GraphFunctionWindowModel = new GraphFunctionWindowViewModel(this);
 
             DataWindowModel = new DataWindowViewModel(this);
+
 
             GetFileName = new LambdaCommand(OnGetFileNameExecuted, CanGetFileNameExecute);
 
@@ -430,11 +350,14 @@ namespace Quau.ViewModels
 
             AbbeTestRun = new LambdaCommand(OnAbbeTestRunExecuted, CanAbbeTestRunExecute);
 
+            OpenOptionsWindow = new LambdaCommand(OnOpenOptionsWindowExecuted, CanOpenOptionsWindowExecute);
+
+            OpenDistributionWindow = new LambdaCommand(OnOpenDistributionWindowExecuted, CanOpenDistributionWindowExecute);
+
             TTestValue = new TTest();
 
             RecordValue = "";
             //
-            SampleData = new List<StatisticSample> { };
         }
     }
 }

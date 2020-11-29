@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ namespace Quau.Services
 {
     static class DataConvertor
     {
-        static public List<double> DataConvertorStrToDouble(string dataValue)
+        static public ICollection<double> DataConvertorStrToDouble(string dataValue)
         {
             char[] separator = new char[] {' ', '\n', '\r' };
             try

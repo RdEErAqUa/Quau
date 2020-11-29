@@ -1,6 +1,7 @@
 ﻿using Quau.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace Quau.Services.StatisticOperation.AnomalyData
     {
         static public StatisticSample Log(StatisticSample valueSample)
         {
-            List<double> ourXi = new List<double> { };
+            ObservableCollection<double> ourXi = new ObservableCollection<double> { };
             foreach (var el in valueSample.Sample)
             {
                 double ourNum = Math.Log(el);
@@ -28,7 +29,7 @@ namespace Quau.Services.StatisticOperation.AnomalyData
             double MED = QuantitiveCharacteristicsService.MEDFind(valueSample.Sample);
             double MAD = QuantitiveCharacteristicsService.MADFind(valueSample.Sample);
 
-            List<double> ourXi = new List<double> { };
+            ObservableCollection<double> ourXi = new ObservableCollection<double> { };
             foreach (var el in valueSample.Sample)
             {
                 double ourNum = (el - MED);
@@ -42,7 +43,7 @@ namespace Quau.Services.StatisticOperation.AnomalyData
         static public StatisticSample Move(StatisticSample valueSample)
         {
 
-            List<double> ourXi = new List<double> { };
+            ObservableCollection<double> ourXi = new ObservableCollection<double> { };
             foreach (var el in valueSample.Sample)
             {
                 double ourNum = valueSample.Sample.First() + el + 0.1;

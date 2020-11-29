@@ -33,7 +33,10 @@
                 <MenuItem Header="Однорідність вибірок(незалежні)" Command="{Binding CheckUniformy}" CommandParameter="{Binding ElementName=DataValueBox, Path=SelectedItems}"/>
                 <MenuItem Header="Аббе тест" Command="{Binding AbbeTestRun}"/>
             </MenuItem>
-            <MenuItem Header="Параметри"/>
+            <MenuItem Header="Параметри">
+                <MenuItem Header="Оцінки" Command="{Binding OpenOptionsWindow}"/>
+                <MenuItem Header="Довірчий інтервал та критерій згоди" Command="{Binding OpenDistributionWindow}"/>
+            </MenuItem>
         </Menu>
 
         <StatusBar DockPanel.Dock="Bottom">
@@ -53,7 +56,13 @@
                     <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="15*"/>
                 </Grid.ColumnDefinitions>
-                <ListBox x:Name="DataValueBox" ItemsSource="{Binding SampleData}" SelectedItem="{Binding SelectedSampleData}" SelectionMode="Extended" Grid.Column="0"/>
+                <ListBox x:Name="DataValueBox" ItemsSource="{Binding SampleData}" SelectedItem="{Binding SelectedSampleData}" SelectionMode="Extended" Grid.Column="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding fileName}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
                 <v:DataWindow DataContext="{Binding DataWindowModel}" Grid.Column="1"/>
             </Grid>
             <GridSplitter Grid.Row="1" ShowsPreview="False" Height="3"

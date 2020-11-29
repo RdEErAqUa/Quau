@@ -37,11 +37,7 @@
                 <oxy:LinearAxis Position="Bottom"/>
             </oxy:Plot.Axes>
             <oxy:StairStepSeries Color="Black"
-                              ItemsSource="{Binding HistogramDataValue}"
-                                                DataFieldX="x"
-                                                DataFieldY="p"/>
-            <oxy:LinearBarSeries Color="Black"
-                              ItemsSource="{Binding HistogramDataValue}"
+                              ItemsSource="{Binding SelectedSampleData.HistogramDataValue}"
                                                 DataFieldX="x"
                                                 DataFieldY="p"/>
             <oxy:LineSeries Color="Red"

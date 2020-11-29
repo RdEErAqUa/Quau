@@ -1,6 +1,7 @@
 ﻿using Quau.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,12 +25,12 @@ namespace Quau.Services.StatisticOperation
 
             List<double> DataRelativeFrequency = findDataRelativeFrequency(dataSampleFrequency);
 
-            valueSample.SampleDataRanking = SampleRankingData;
-
             for(int i = 0; i < dataSample.Count; i++) SampleRankingData.Add(
-                new Models.SampleRanking { SampleData = dataSample[i], 
+                new Models.SampleRanking { SampleData = Math.Round(dataSample[i], valueSample.RoundValue), 
                 SampleDataFrequency = dataSampleFrequency[i] , 
-                SampleDataRelativeFrequency = DataRelativeFrequency[i]});
+                SampleDataRelativeFrequency = Math.Round(DataRelativeFrequency[i], valueSample.RoundValue)});
+
+            valueSample.SampleDataRanking = new ObservableCollection<SampleRanking>(SampleRankingData);
         }
 
         static private List<double> removeEqualse(ICollection<double> value)

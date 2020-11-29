@@ -6,6 +6,7 @@ using Quau.Services.StatisticOperation;
 using Quau.ViewModels.Base;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,13 +29,7 @@ namespace Quau.ViewModels
         {
             get => _SelectedSampleData; set
             {
-                Set(ref _SelectedSampleData, value, true);
-                if (SelectedSampleData != null)
-                {
-                    HistogramDataValue = CreateEmpiricalData.CreateEmpiricalDataValue(_SelectedSampleData);
-                }
-                else
-                    HistogramDataValue = null;
+                Set(ref _SelectedSampleData, value);
             }
         }
 
@@ -43,15 +38,7 @@ namespace Quau.ViewModels
 
         private ICollection<StatisticSample> _SampleData;
 
-        public ICollection<StatisticSample> SampleData {get => _SampleData; set { Set(ref _SampleData, value, true); } }
-
-        #endregion
-
-        #region HistogramDataValue : ICollection<DataValueHistogram> - данные о эмпирической функции распределения
-
-        private ICollection<DataValueHistogram> _HistogramDataValue;
-
-        public ICollection<DataValueHistogram> HistogramDataValue { get => _HistogramDataValue; set => Set(ref _HistogramDataValue, value, true); }
+        public ICollection<StatisticSample> SampleData {get => _SampleData; set { Set(ref _SampleData, value); } }
 
         #endregion
         #endregion

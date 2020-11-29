@@ -12,7 +12,6 @@ namespace Quau.Models
         public double newValue { get; set; }
         public double delta2Value { get; set; }
         public int NValue { get; set; }
-
         public double TValue { get; set; }
     }
 }

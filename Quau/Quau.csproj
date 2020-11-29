@@ -71,6 +71,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\OptionsData\DistributionDataWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OptionsData\OptionsDataWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -82,14 +90,20 @@
     <Compile Include="Data\AbbeTest\AbbeTest.cs" />
     <Compile Include="Data\ConsentTest\KolmogorovTest.cs" />
     <Compile Include="Data\ConsentTest\PearsonTest.cs" />
+    <Compile Include="Data\DecimalData.cs" />
+    <Compile Include="Data\Modeling\ModelingElement.cs" />
+    <Compile Include="Data\UniformySamples\Uniformy.cs" />
     <Compile Include="Data\UniformySamples\UniformySamples.cs" />
+    <Compile Include="DisplayRootRegistry.cs" />
     <Compile Include="Infrastructure\Commands\Base\Command.cs" />
     <Compile Include="Infrastructure\Commands\LambdaCommand.cs" />
+    <Compile Include="Models\Base\BaseModel.cs" />
     <Compile Include="Models\DistributionConsent\DistributionConsentTest.cs" />
     <Compile Include="Models\DistributionSet\DistributionSamples.cs" />
     <Compile Include="Models\Histograma\DataValueHistogram.cs" />
+    <Compile Include="Models\ModelingSample\ModelingSample.cs" />
+    <Compile Include="Models\Quantiles.cs" />
     <Compile Include="Models\SamplePrimaryDivisionINClass.cs" />
-    <Compile Include="Models\SamplePrimaryStatisticAnalyse.cs" />
     <Compile Include="Models\SampleRanking.cs" />
     <Compile Include="Models\StatisticSample.cs" />
     <Compile Include="Models\TTest.cs" />
@@ -109,11 +123,19 @@
     <Compile Include="ViewModels\DataWindowViewModel.cs" />
     <Compile Include="ViewModels\GraphFunctionWindowViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\OptionsData\DistributionDataViewModel.cs" />
+    <Compile Include="ViewModels\OptionsData\OptionsDataViewModel.cs" />
     <Compile Include="Views\DataWindow.xaml.cs">
       <DependentUpon>DataWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GraphFunctionWindow.xaml.cs">
       <DependentUpon>GraphFunctionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\OptionsData\DistributionDataWindow.xaml.cs">
+      <DependentUpon>DistributionDataWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\OptionsData\OptionsDataWindow.xaml.cs">
+      <DependentUpon>OptionsDataWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

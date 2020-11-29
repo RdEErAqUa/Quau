@@ -27,34 +27,53 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
-            <TabItem Header="Незсунені кількістні характеристики">
-                <DataGrid ItemsSource="{Binding SelectedSampleData.DistributionSample}" AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding X}" Width="*" Header="X"/>
-                        <DataGridTextColumn Binding="{Binding Y}" Width="*" Header="Y"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-            <TabItem Header="Оцінки параметрів розподілу">
-
-            </TabItem>
             <TabItem Header="Протокол">
                 <TextBlock Text="{Binding MainModel.RecordValue}"/>
             </TabItem>
-            <TabItem Header="Відтворення розподілу">
-                <StackPanel>
-                    <TextBlock Text="Характеристика"></TextBlock>
-                    <TextBox Text="{Binding MainModel.TTestValue.value}"></TextBox>
-                    <TextBlock Text="Характеристика по новим замірам"></TextBlock>
-                    <TextBox Text="{Binding MainModel.TTestValue.newValue}"></TextBox>
-                    <TextBlock Text="Середньоквадратичне відхилення"></TextBlock>
-                    <TextBox Text="{Binding MainModel.TTestValue.delta2Value}"></TextBox>
-                    <TextBlock Text="Кількість елементів"></TextBlock>
-                    <TextBox Text="{Binding MainModel.TTestValue.NValue}"></TextBox>
-                    <Button Content="Обчислити значення" Command="{Binding TTestFind}"/>
-                    <TextBlock Text="t - тест"></TextBlock>
-                    <TextBlock Text="{Binding MainModel.TTestValue.TValue}"></TextBlock>
-                </StackPanel>
+            <TabItem Header="Моделювання розподілу">
+                <DockPanel>
+                    <TextBlock Text="Lambda Value - значення оцінки для експоненційного розподілу. Таблиця вказує на t - статистику для всіх змодельованих вибірок" DockPanel.Dock="Top"/>
+                    <TextBlock Text="{Binding lambdaValue}" DockPanel.Dock="Top"/>
+                    <Slider Maximum="1" Minimum="0" Value="{Binding lambdaValue}" DockPanel.Dock="Top" TickFrequency="0.1"/>
+                    <Button Command="{Binding ModelingExponentialSample}" Content="Змоделювати розподіл" DockPanel.Dock="Top"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid Grid.Column="0" ItemsSource="{Binding ModelingSamples.tValue_10}" AutoGenerateColumns="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding }" Header="T10" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <DataGrid Grid.Column="1" ItemsSource="{Binding ModelingSamples.tValue_40}" AutoGenerateColumns="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding }" Header="T40" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <DataGrid Grid.Column="2" ItemsSource="{Binding ModelingSamples.tValue_100}" AutoGenerateColumns="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding }" Header="T100" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <DataGrid Grid.Column="3" ItemsSource="{Binding ModelingSamples.tValue_400}" AutoGenerateColumns="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding }" Header="T400" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <DataGrid Grid.Column="4" ItemsSource="{Binding ModelingSamples.tValue_1000}" AutoGenerateColumns="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding }" Header="T1000" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="Протокол(Змодельованого розподілу)">
+                <TextBox Text="{Binding RecordValue}"/>
             </TabItem>
         </TabControl>
     </Grid>

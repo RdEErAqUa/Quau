@@ -19,11 +19,11 @@ namespace Quau.Services.StatisticOperation
             answer.Add(new DataValueHistogram { x = valueSample.SampleDivisionINClass.First().SampleDivisionData, p = pz });
             foreach (var el in valueSample.SampleDivisionINClass)
             {
-                if (el == valueSample.SampleDivisionINClass.First()) ;
+                if (el == valueSample.SampleDivisionINClass.First()) continue;
                 else
                 {
                     pz += el.SampleDivisionDataRelativeFrequency;
-                    answer.Add(new DataValueHistogram { x = el.SampleDivisionData, p = pz });
+                    answer.Add(new DataValueHistogram { x =  Math.Round(el.SampleDivisionData, valueSample.RoundValue), p = Math.Round(pz, valueSample.RoundValue) });
                 }
             }
 

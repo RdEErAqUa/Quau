@@ -2,6 +2,7 @@
 using Quau.Models.DistributionSet;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,9 +41,20 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
                 valueDistributionSample.Add(new DistributionSamples { X = valueDoubleTemp.ElementAt(i), Y = ourT});
             }
 
-            valueSample.DistributionSample = valueDistributionSample;
+            valueSample.DistributionSample = new ObservableCollection<DistributionSamples>(valueDistributionSample);
 
             return valueSample;
+        }
+
+        static public double lambdaValueExponential(ICollection<SampleRanking> valueSampleRanking)
+        {
+            ICollection<double> valueDoubleTemp = new List<double> { };
+
+            foreach (var el in valueSampleRanking) valueDoubleTemp.Add(el.SampleData);
+
+            double ArithmeticMean = QuantitiveCharacteristicsService.ArithmeticalMean(valueDoubleTemp);
+            double lambdaValue = 1 / ArithmeticMean;
+            return lambdaValue;
         }
         static public StatisticSample ExponentialDistribution(ICollection<SampleRanking> valueSampleRanking, StatisticSample valueSample)
         {
@@ -60,7 +72,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
                 valueDistributionSample.Add(new DistributionSamples { X = valueDoubleTemp.ElementAt(i), Y = valueDoubleTemp.ElementAt(i) < 0 ? 0 : valueSample.StepSize * lambdaValue * Math.Exp((-lambdaValue) * valueDoubleTemp.ElementAt(i)) }) ;
             }
 
-            valueSample.DistributionSample = valueDistributionSample;
+            valueSample.DistributionSample = new ObservableCollection<DistributionSamples>(valueDistributionSample);
 
             return valueSample;
         }
@@ -84,7 +96,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
                 valueDistributionSample.Add(new DistributionSamples { X = valueDoubleTemp.ElementAt(i), Y = valueDoubleTemp.ElementAt(i) < aValue || valueDoubleTemp.ElementAt(i) > bValue ? 0 : valueSample.StepSize * (1 / (bValue - aValue)) });
             }
 
-            valueSample.DistributionSample = valueDistributionSample;
+            valueSample.DistributionSample = new ObservableCollection<DistributionSamples>(valueDistributionSample);
 
             return valueSample;
         }
@@ -126,7 +138,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
                 valueDistributionSample.Add(new DistributionSamples { X = valueDoubleTemp.ElementAt(i), Y = ourT });
             }
 
-            valueSample.DistributionSample = valueDistributionSample;
+            valueSample.DistributionSample = new ObservableCollection<DistributionSamples>(valueDistributionSample);
 
             return valueSample;
         }
@@ -151,7 +163,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
                 }
             }
 
-            valueSample.DistributionSample = valueDistributionSample;
+            valueSample.DistributionSample = new ObservableCollection<DistributionSamples>(valueDistributionSample);
 
             return valueSample;
         }
@@ -178,7 +190,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
                 valueDistributionSample.Add(new DistributionSamples { X = valueDoubleTemp.ElementAt(i), Y = ourFFind((valueDoubleTemp.ElementAt(i) - ArtiheticMean) / ourO) });
             }
 
-            valueSample.DistributionSampleEmpirical = valueDistributionSample;
+            valueSample.DistributionSampleEmpirical = new ObservableCollection<DistributionSamples>(valueDistributionSample);
 
             return valueSample;
         }
@@ -198,7 +210,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
                 valueDistributionSample.Add(new DistributionSamples { X = valueDoubleTemp.ElementAt(i), Y = valueDoubleTemp.ElementAt(i) < 0 ? 0 : 1 - Math.Exp((-LambdaValue) * valueDoubleTemp.ElementAt(i)) });
             }
 
-            valueSample.DistributionSampleEmpirical = valueDistributionSample;
+            valueSample.DistributionSampleEmpirical = new ObservableCollection<DistributionSamples>(valueDistributionSample);
 
             return valueSample;
         }
@@ -224,7 +236,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
                     (valueDoubleTemp.ElementAt(i) - AValue) / (BValue - AValue) : 1 });
             }
 
-            valueSample.DistributionSampleEmpirical = valueDistributionSample;
+            valueSample.DistributionSampleEmpirical = new ObservableCollection<DistributionSamples>(valueDistributionSample);
 
             return valueSample;
         }
@@ -253,7 +265,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
                 });
             }
 
-            valueSample.DistributionSampleEmpirical = valueDistributionSample;
+            valueSample.DistributionSampleEmpirical = new ObservableCollection<DistributionSamples>(valueDistributionSample);
 
             return valueSample;
         }
@@ -297,12 +309,107 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
                 }
             }
 
-            valueSample.DistributionSampleEmpirical = valueDistributionSample;
+            valueSample.DistributionSampleEmpirical = new ObservableCollection<DistributionSamples>(valueDistributionSample);
 
             return valueSample;
         }
+        //Довірчі інтервали
+        static public String NormalDistributionInterval(ICollection<SampleRanking> valueSampleRanking, StatisticSample valueSample)
+        {
+            List<DistributionSamples> valueDistributionSample = new List<DistributionSamples> { };
 
-        //ЧТО ЭТО? 14.10.2020! А ЕСЛИ СЕРЬЕЗНО, Я НАДЕЮСЬ ЧТО ТЫ ЭТО ИСПРАВИЛ!
+            ICollection<double> valueDoubleTemp = new List<double> { };
+
+            foreach (var el in valueSampleRanking) valueDoubleTemp.Add(el.SampleData);
+
+            double ArtiheticMean = Math.Round(QuantitiveCharacteristicsService.ArithmeticalMean(valueDoubleTemp), valueSample.RoundValue); //Мат сподівання
+            double AritheticMeanDouble = Math.Round(QuantitiveCharacteristicsService.AritheticMeanDouble(valueDoubleTemp), valueSample.RoundValue);
+            double NSize = valueDoubleTemp.Count;
+
+            NSize = NSize / (NSize - 1);
+
+            double ourO = Math.Round(NSize * Math.Sqrt((AritheticMeanDouble - Math.Pow(ArtiheticMean, 2.0))), valueSample.RoundValue);
+
+            double ourDArithmeticMean = Math.Round(Math.Pow(ourO, 2) / valueDoubleTemp.Count, valueSample.RoundValue);
+
+            double ourDO = Math.Round(Math.Pow(ourO, 2) / (2 * valueDoubleTemp.Count), valueSample.RoundValue);
+
+            double covArithmeticMeanO = 0;
+
+            String returnValue = $"\n##############################################" + 
+                $"\nДовірче оцінювання: m    |   Sigma" + 
+                $"\nОцінка:             {ArtiheticMean}    |    {ourO}" +
+                $"\nДисперсія:          {ourDArithmeticMean} | {ourDO}" +
+                $"\nВерхня межа:        {ArtiheticMean + Math.Round(Math.Sqrt(ourDArithmeticMean), valueSample.RoundValue)} | {ourO + Math.Round(Math.Sqrt(ourDO), valueSample.RoundValue)}" +
+                $"\nНижня межа:         {ArtiheticMean - Math.Round(Math.Sqrt(ourDArithmeticMean), valueSample.RoundValue)} | {ourO - Math.Round(Math.Sqrt(ourDO), valueSample.RoundValue)}" +
+                $"\n##############################################";
+
+            return returnValue;
+
+
+
+        }
+        static public String ExponentialDistributionInterval(ICollection<SampleRanking> valueSampleRanking, StatisticSample valueSample)
+        {
+            List<DistributionSamples> valueDistributionSample = new List<DistributionSamples> { };
+
+            ICollection<double> valueDoubleTemp = new List<double> { };
+
+            foreach (var el in valueSampleRanking) valueDoubleTemp.Add(el.SampleData);
+
+            double ArithmeticMean = QuantitiveCharacteristicsService.ArithmeticalMean(valueDoubleTemp);
+            double lambdaValue = 1 / ArithmeticMean;
+
+            double ourDLambda = Math.Pow(lambdaValue, 2) / valueDoubleTemp.Count;
+
+            String returnValue = $"\n##############################################" +
+                $"\nДовірче оцінювання: LambdaValue" +
+                $"\nОцінка:             {lambdaValue}" +
+                $"\nДисперсія:          {ourDLambda}" +
+                $"\nВерхня межа:        {lambdaValue + Math.Round(Math.Sqrt(ourDLambda), valueSample.RoundValue)}" +
+                $"\nНижня межа:         {lambdaValue - Math.Round(Math.Sqrt(ourDLambda), valueSample.RoundValue)}" +
+                $"\n##############################################";
+
+            return returnValue;
+
+
+
+        }
+        static public String EvenDistributionInterval(ICollection<SampleRanking> valueSampleRanking, StatisticSample valueSample)
+        {
+            List<DistributionSamples> valueDistributionSample = new List<DistributionSamples> { };
+
+            ICollection<double> valueDoubleTemp = new List<double> { };
+
+            foreach (var el in valueSampleRanking) valueDoubleTemp.Add(el.SampleData);
+
+            double ArithmeticMean = QuantitiveCharacteristicsService.ArithmeticalMean(valueDoubleTemp);
+            double RouteMean = QuantitiveCharacteristicsService.AritheticMeanDouble(valueDoubleTemp);
+            double lambdaValue = 1 / ArithmeticMean;
+
+            double aValue = ArithmeticMean - Math.Sqrt(3 * (RouteMean - Math.Pow(ArithmeticMean, 2.0)));
+            double bValue = ArithmeticMean + Math.Sqrt(3 * (RouteMean - Math.Pow(ArithmeticMean, 2.0)));
+
+            double ourDAValue = Math.Pow((bValue - aValue), 2) / (12.0 * valueDoubleTemp.Count);
+
+            double ourDBValue = (Math.Pow((bValue - aValue), 4) + 15.0 * Math.Pow(aValue + bValue, 2) * Math.Pow(bValue - aValue, 2)) / (180.0 * valueDoubleTemp.Count);
+
+            double cov = (aValue + bValue) * Math.Pow(bValue - aValue, 2) / (12 * valueDoubleTemp.Count);
+
+            String returnValue = $"\n##############################################" +
+                $"\nДовірче оцінювання: a    |   b" +
+                $"\nОцінка:             {aValue}    |    {bValue}" +
+                $"\nДисперсія:          {ourDAValue} | {ourDBValue}" +
+                $"\nВерхня межа:        {aValue + Math.Round(Math.Sqrt(ourDAValue), valueSample.RoundValue)} | {bValue + Math.Round(Math.Sqrt(ourDBValue), valueSample.RoundValue)}" +
+                $"\nНижня межа:         {aValue - Math.Round(Math.Sqrt(ourDAValue), valueSample.RoundValue)} | {bValue - Math.Round(Math.Sqrt(ourDBValue), valueSample.RoundValue)}" +
+                $"\n##############################################";
+
+            return returnValue;
+
+
+
+        }
+        //Приближенная апроксимация функции Ф((x-m)/o)
         static private double ourFFind(double ourNum)
         {
             double ourAnswer = 0;

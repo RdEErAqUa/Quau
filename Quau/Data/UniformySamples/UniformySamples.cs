@@ -14,7 +14,6 @@ namespace Quau.Data.UniformySamples
 
         static public double uniformyAverage(ICollection<StatisticSample> values, bool isDependent = false)
         {
-            double answerT = 0;
 
             if (values.Count != 2)
                 return 0;
@@ -22,11 +21,11 @@ namespace Quau.Data.UniformySamples
             if (!isDependent)
             {
                 //Independent 
-                double deltaX = values.ElementAt(0).QuantitiveCharactacteristics.ElementAt(0).AitherticMean;
-                double deltaY = values.ElementAt(1).QuantitiveCharactacteristics.ElementAt(0).AitherticMean;
+                double deltaX = values.ElementAt(0).QuantitiveCharactacteristics.AritmeitcMean;
+                double deltaY = values.ElementAt(1).QuantitiveCharactacteristics.AritmeitcMean;
 
-                double SX2 = values.ElementAt(0).QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare;
-                double SY2 = values.ElementAt(1).QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare;
+                double SX2 = values.ElementAt(0).QuantitiveCharactacteristics.RouteMeanSquare;
+                double SY2 = values.ElementAt(1).QuantitiveCharactacteristics.RouteMeanSquare;
 
                 return ((deltaX - deltaY) / (Math.Sqrt((Math.Pow(SX2, 2.0) / values.ElementAt(0).Sample.Count) + (Math.Pow(SY2, 2.0) / values.ElementAt(1).Sample.Count))));
             }
@@ -59,14 +58,14 @@ namespace Quau.Data.UniformySamples
             }
 
 
-        }
+        } //Збіг середніх
 
         static public double uniformyVariances(ICollection<StatisticSample> values)
         {
             if (values.Count == 2)
             {
-                double SX = values.ElementAt(0).QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare;
-                double SY = values.ElementAt(1).QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare;
+                double SX = values.ElementAt(0).QuantitiveCharactacteristics.RouteMeanSquare;
+                double SY = values.ElementAt(1).QuantitiveCharactacteristics.RouteMeanSquare;
                 if (Math.Pow(SX, 2.0) > Math.Pow(SY, 2.0))
                     return (Math.Pow(SX, 2.0) / Math.Pow(SY, 2.0));
                 else
@@ -77,7 +76,7 @@ namespace Quau.Data.UniformySamples
                 double S1 = 0, deltaN = 0;
                 foreach (var el in values)
                 {
-                    S1 += ((el.Sample.Count - 1) * el.QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare);
+                    S1 += ((el.Sample.Count - 1) * el.QuantitiveCharactacteristics.RouteMeanSquare);
                     deltaN += (el.Sample.Count - 1);
                 }
                 double S = S1 / deltaN;
@@ -87,7 +86,7 @@ namespace Quau.Data.UniformySamples
 
                 foreach (var el in values)
                 {
-                    B += ((el.Sample.Count - 1) * Math.Log(Math.Pow(el.QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare, 2.0) / Math.Pow(S, 2.0)));
+                    B += ((el.Sample.Count - 1) * Math.Log(Math.Pow(el.QuantitiveCharactacteristics.RouteMeanSquare, 2.0) / Math.Pow(S, 2.0)));
 
                     C += (1.0 / (el.Sample.Count - 1));
                 }
@@ -99,7 +98,7 @@ namespace Quau.Data.UniformySamples
                 return B / C;
 
             }
-        }
+        } //Збіс дисперсій
 
         static private List<double> RankCount(List<double> newSample)
         {
@@ -174,7 +173,7 @@ namespace Quau.Data.UniformySamples
             double w = ((W - EW) / Math.Sqrt(DW));
 
             return w;
-        }
+        } //Критерій суми Вілксона
 
         static public double uniformyMannaWhitney(ICollection<StatisticSample> values)
         {
@@ -205,7 +204,7 @@ namespace Quau.Data.UniformySamples
             return ((U - EU) / Math.Sqrt(DU));
 
 
-        }
+        } //Критерій Манна Уїтні
 
         static public double uniformyMiddleRanking(ICollection<StatisticSample> values)
         {
@@ -232,7 +231,7 @@ namespace Quau.Data.UniformySamples
             rankX *= (1.0 / values.ElementAt(0).Sample.Count);
             rankY *= (1.0 / values.ElementAt(1).Sample.Count);
             return (rankX - rankY) / (newSample.Count * Math.Sqrt((newSample.Count + 1.0) / (12.0 * (values.ElementAt(0).Sample.Count * values.ElementAt(1).Sample.Count))));
-        }
+        } //Критерій середніх рангів
 
         static public double uniformyAnalysisVariance(ICollection<StatisticSample> values)
         {
@@ -242,7 +241,7 @@ namespace Quau.Data.UniformySamples
 
             foreach (var el in values)
             {
-                double f = el.Sample.Count * el.QuantitiveCharactacteristics.ElementAt(0).AitherticMean;
+                double f = el.Sample.Count * el.QuantitiveCharactacteristics.AritmeitcMean;
                 n += el.Sample.Count;
                 deltaX += f;
             }
@@ -253,7 +252,7 @@ namespace Quau.Data.UniformySamples
 
             foreach (var el in values)
             {
-                SM += el.Sample.Count * Math.Pow((el.QuantitiveCharactacteristics.ElementAt(0).AitherticMean - deltaX), 2.0);
+                SM += el.Sample.Count * Math.Pow((el.QuantitiveCharactacteristics.AritmeitcMean - deltaX), 2.0);
             }
 
             SM *= (1.0 / (values.Count - 1.0));
@@ -264,7 +263,7 @@ namespace Quau.Data.UniformySamples
             {
                 double SBTemp = 0;
 
-                SBTemp = SBTemp + (el.Sample.Count - 1) * Math.Pow(el.QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare, 2.0);
+                SBTemp = SBTemp + (el.Sample.Count - 1) * Math.Pow(el.QuantitiveCharactacteristics.RouteMeanSquare, 2.0);
 
                 SB += SBTemp;
             }
@@ -272,7 +271,7 @@ namespace Quau.Data.UniformySamples
             SB *= (1.0 / (n - values.Count));
 
             return SM / SB;
-        }
+        } //Однофакторний дисперсійний аналіз
 
         static public double uniformyHTest(ICollection<StatisticSample> values)
         {
@@ -309,7 +308,7 @@ namespace Quau.Data.UniformySamples
             }
 
             return H;
-        }
+        } //H - тест
 
         static public double uniformyKolmogorovaSmirnova(ICollection<StatisticSample> values)
         {

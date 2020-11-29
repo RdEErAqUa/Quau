@@ -17,9 +17,9 @@ namespace Quau.Data.AbbeTest
 
             d *= (1.0 / (statisticSample.Sample.Count - 1));
 
-            double q = d / (2.0 * Math.Pow(statisticSample.QuantitiveCharactacteristics.ElementAt(0).RouteMeanSquare, 2.0));
+            double q = d / (2.0 * Math.Pow(statisticSample.QuantitiveCharactacteristics.RouteMeanSquare, 2.0));
 
-            return (q - 1.0) * Math.Sqrt((Math.Pow(statisticSample.Sample.Count - 1.0, 2.0) - 1.0)  / (statisticSample.Sample.Count - 2.0));
+            return Math.Round((q - 1.0) * Math.Sqrt((Math.Pow(statisticSample.Sample.Count - 1.0, 2.0) - 1.0)  / (statisticSample.Sample.Count - 2.0)), statisticSample.RoundValue);
         }
     }
 }

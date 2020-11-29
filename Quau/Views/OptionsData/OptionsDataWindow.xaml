@@ -1,0 +1,47 @@
+﻿<Window x:Class="Quau.Views.OptionsData.OptionsDataWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Quau.Views.OptionsData"
+        mc:Ignorable="d"
+        xmlns:vm="clr-namespace:Quau.ViewModels.OptionsData"
+        Title="OptionsDataWindow" Height="300" Width="200">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <TextBox Text="Кількість классів" IsReadOnly="True"/>
+                <TextBox Text="Середнє арифметичне" IsReadOnly="True"/>
+                <TextBox Text="Средньоквадратичне" IsReadOnly="True"/>
+                <TextBox Text="Коефіцієнт ассиметрії" IsReadOnly="True"/>
+                <TextBox Text="Коефіцієнт ексцесу" IsReadOnly="True"/>
+                <TextBox Text="Коефіцієнт контрексцесу" IsReadOnly="True"/>
+                <TextBox Text="Варіація Пірсона" IsReadOnly="True"/>
+                <TextBox Text="MED" IsReadOnly="True"/>
+                <TextBox Text="MAD" IsReadOnly="True"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1">
+                <TextBox Text="{Binding MainModel.SelectedSampleData.ClassSize}"/>
+                <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.AritmeitcMean}" IsReadOnly="True"/>
+                <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.RouteMeanSquare}" IsReadOnly="True"/>
+                <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.Skewness_Shifted}" IsReadOnly="True"/>
+                <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.Kurtosis_Shifted}" IsReadOnly="True"/>
+                <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.CounterKurtosis}" IsReadOnly="True"/>
+                <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.Pearson_Variation}" IsReadOnly="True"/>
+                <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.MED}" IsReadOnly="True"/>
+                <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.MAD}" IsReadOnly="True"/>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1">
+            <TextBlock Text="{Binding MainModel.SelectedSampleData.IntervalProtocol}"/>
+        </Grid>
+    </Grid>
+</Window>
