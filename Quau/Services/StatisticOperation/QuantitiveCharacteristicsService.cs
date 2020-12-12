@@ -1,6 +1,8 @@
 ﻿using Quau.Models;
+using Quau.Models.XYModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,20 +13,7 @@ namespace Quau.Services.StatisticOperation
     {
         static public void QuantitiveCharacteristics(StatisticSample valueSample)
         {
-            unShiftedShiftedQuantitiveCharacteristics quantitiveCharacteristics = new unShiftedShiftedQuantitiveCharacteristics { };
-            //
-            quantitiveCharacteristics.MED = Math.Round(MEDFind(valueSample.Sample), valueSample.RoundValue);
-            quantitiveCharacteristics.MAD = Math.Round(MADFind(valueSample.Sample), valueSample.RoundValue);
-            quantitiveCharacteristics.S_Variance_Shifted = Math.Round(S_Variance_Shifted(valueSample.Sample), valueSample.RoundValue);
-            quantitiveCharacteristics.S_Variance_unShifted = Math.Round(S_Variance_unShifte(valueSample.Sample), valueSample.RoundValue);
-            quantitiveCharacteristics.AritmeitcMean = Math.Round(ArithmeticalMean(valueSample.Sample), valueSample.RoundValue);
-            quantitiveCharacteristics.RouteMeanSquare = Math.Round(RouteMeanSquare(valueSample.Sample), valueSample.RoundValue);
-            quantitiveCharacteristics.Skewness_Shifted = Math.Round(Skewness_Shifted(valueSample.Sample), valueSample.RoundValue);
-            quantitiveCharacteristics.Skewness_unShifted = Math.Round(Skewness_unShifted(valueSample.Sample), valueSample.RoundValue);
-            quantitiveCharacteristics.Kurtosis_Shifted = Math.Round(Kurtosis_Shifted(valueSample.Sample), valueSample.RoundValue);
-            quantitiveCharacteristics.Kurtosis_unShifted = Math.Round(Kurtosis_unShifted(valueSample.Sample), valueSample.RoundValue);
-            quantitiveCharacteristics.CounterKurtosis = Math.Round(CounterKurtosis(valueSample.Sample), valueSample.RoundValue);
-            quantitiveCharacteristics.Pearson_Variation = Math.Round(Pearson_Variation(valueSample.Sample), valueSample.RoundValue);
+            var quantitiveCharacteristics = valueSample.QuantitiveCharactacteristics;
 
             double A = valueSample.Sample.Count < 40 ? 0.5 : (valueSample.Sample.Count < 100 ? 0.25 : 0.1);
 
@@ -39,20 +28,33 @@ namespace Quau.Services.StatisticOperation
             double ourOAC = Math.Round(ourOAC_Find(valueSample.Sample), valueSample.RoundValue);
             double ourOEC = Math.Round(ourOEC_Find(valueSample.Sample), valueSample.RoundValue);
 
-            double t = A == 0.5 ? (quantiles.T_a0_5[v1]) : (A == 0.25 ? (quantiles.T_a0_25[v1]) : (quantiles.T_a0_1[v1]));
+            double t = quantiles.T_a0_05[v1];
+
+            double pMax = 0;
+            foreach (var el in valueSample.SampleDivisionINClass)
+                if (el.SampleDivisionDataRelativeFrequency > pMax)
+                    pMax = el.SampleDivisionDataRelativeFrequency;
 
             valueSample.IntervalProtocol = "";
-            valueSample.IntervalProtocol += $"\no1      |      0.95%      |      o2" +
-                $"\n{quantitiveCharacteristics.AritmeitcMean + Math.Round(t * ourOdeltaX, valueSample.RoundValue)}      |      Середнє      |      {quantitiveCharacteristics.AritmeitcMean - Math.Round(t * ourOdeltaX, valueSample.RoundValue)}" +
-                $"\n{quantitiveCharacteristics.RouteMeanSquare + Math.Round(t * ourOSC, valueSample.RoundValue)}      |      Середньоквадратичне      |      {quantitiveCharacteristics.RouteMeanSquare - Math.Round(t * ourOSC, valueSample.RoundValue)}" +
-                $"\n{quantitiveCharacteristics.Skewness_Shifted + Math.Round(t * ourOAC, valueSample.RoundValue)}      |      Асиметрія      |      {quantitiveCharacteristics.Skewness_Shifted - Math.Round(t * ourOAC, valueSample.RoundValue)}" +
-                $"\n{quantitiveCharacteristics.CounterKurtosis + Math.Round(t * ourOEC, valueSample.RoundValue)}      |      Контрексцесу      |      {quantitiveCharacteristics.CounterKurtosis - Math.Round(t * ourOEC, valueSample.RoundValue)}";
+            valueSample.IntervalProtocol += $"\no1      |      0.95%      |      o2       |        СКВ" +
+                $"\n{quantitiveCharacteristics.AritmeitcMean - Math.Round(t * ourOdeltaX, valueSample.RoundValue)}     |      Середнє арифметичне    |      {quantitiveCharacteristics.AritmeitcMean + Math.Round(t * ourOdeltaX, valueSample.RoundValue)}           |            " +
+                $"{Math.Round(quantitiveCharacteristics.AritmeitcMean / Math.Sqrt(valueSample.Sample.Count), valueSample.RoundValue)}" +
+                $"\n{quantitiveCharacteristics.RouteMeanSquare - Math.Round(t * ourOSC, valueSample.RoundValue)}       |      Середньоквадратичне    |      {quantitiveCharacteristics.RouteMeanSquare + Math.Round(t * ourOSC, valueSample.RoundValue)}           |            " +
+                $"{Math.Round(quantitiveCharacteristics.RouteMeanSquare / Math.Sqrt(valueSample.Sample.Count), valueSample.RoundValue)}" +
+                $"\n{quantitiveCharacteristics.Skewness - Math.Round(t * ourOAC, valueSample.RoundValue)}              |      Коефіцієнт асиметрії   |      {quantitiveCharacteristics.Skewness + Math.Round(t * ourOAC, valueSample.RoundValue)}           |            " +
+                $"{Math.Round(quantitiveCharacteristics.Skewness / Math.Sqrt(valueSample.Sample.Count), valueSample.RoundValue)}" +
+                $"\n{quantitiveCharacteristics.CounterKurtosis - Math.Round(t * ourOEC, valueSample.RoundValue)}       |      Коефіц контрексцесу   |      {quantitiveCharacteristics.CounterKurtosis + Math.Round(t * ourOEC, valueSample.RoundValue)}           |            " +
+                $"{Math.Round(quantitiveCharacteristics.CounterKurtosis / Math.Sqrt(valueSample.Sample.Count), valueSample.RoundValue)}";
             //
 
             valueSample.QuantitiveCharactacteristics = quantitiveCharacteristics;
+
+            valueSample.QuantitiveCharactacteristics.AritmeitcMeanConfidenceInterval = new ObservableCollection<XYData> {
+                new XYData {X = quantitiveCharacteristics.AritmeitcMean - quantitiveCharacteristics.RouteMeanSquare , Y = pMax/2.0, A = 0.95},
+                new XYData {X = quantitiveCharacteristics.AritmeitcMean + quantitiveCharacteristics.RouteMeanSquare, Y = pMax/2.0, A = 0.95} };
         }
 
-        //MED
+        #region MED - (ICollection<double> value) => double - вибіркова медіана
         static public double MEDFind(ICollection<double> value) {
             if (value.Count % 2 == 0)
             {
@@ -70,56 +72,38 @@ namespace Quau.Services.StatisticOperation
                 return MED;
             }
         }
-        //MAD
+        #endregion
+
+        #region MAD - (ICollection<double> value) => double - вибіркова медіана
         static public double MADFind(ICollection<double> value) => (1.483 * MEDFind(value));
-        //Дисперсія (зсунена, незсунена)
-        static public double S_Variance_Shifted(ICollection<double> value) => Math.Sqrt(CentralMoment(value, 2));
-        static public double S_Variance_unShifte(ICollection<double> value) 
+        #endregion
+
+        #region S_Variance_Shifted and S_Variance_unShifte : (ICollection<double> value) => double - Вибіркова дисперсія та середньоквадратичне відхилення
+        static public double S_Variance_Shifted(ICollection<double> value) => CentralMoment(value, 2);
+        static public double S_Variance_unShifted(ICollection<double> value) 
         {
-            double valueSVariance = 0;
-            double XAverage = ArithmeticalMean(value);
+            double answerValue = 0;
+            double valueInitial = InitialStatisticMoment(value, 1);
 
             for (int i = 0; i < value.Count; i++)
             {
-                valueSVariance += Math.Pow((value.ElementAt(i) - XAverage), 2);
+                answerValue += Math.Pow((value.ElementAt(i) - valueInitial), 2);
             }
 
-            valueSVariance /= (value.Count - 1);
+            answerValue /= value.Count - 1;
 
-            valueSVariance = Math.Sqrt(valueSVariance);
-
-            return valueSVariance;
+            return answerValue;
         }
-        //Середнє арифметичне
-        static public double ArithmeticalMean(ICollection<double> value) {
-            double deltaX = 0;
 
-            for (int i = 0; i < value.Count; i++)
-            {
-                deltaX += value.ElementAt(i);
-            }
-            deltaX /= value.Count;
+        static public double RouteMeanSquare(ICollection<double> value) => Math.Sqrt(S_Variance_unShifted(value));
+        #endregion
 
-            return deltaX;
-        }
-        //Середнєквадратичне
-        static public double RouteMeanSquare(ICollection<double> value) 
-        {
-            double RouteMean = 0;
-            double XAverage = ArithmeticalMean(value);
+        #region Середньоарифметичне : (ICollection<double> value) => double - обчислення середньоарифметичного
+        static public double ArithmeticalMean(ICollection<double> value) => InitialStatisticMoment(value, 1);
+        #endregion
 
-            for (int i = 0; i < value.Count; i++)
-            {
-                RouteMean += Math.Pow((value.ElementAt(i) - XAverage), 2);
-            }
-            RouteMean /= value.Count;
-
-            RouteMean = Math.Sqrt(RouteMean);
-
-            return RouteMean;
-        }
         //Серденій Квадратне(для Нормального розподілу) если это читаете, я не знал как назвать эту функцию 12.10.2020
-        static public double AritheticMeanDouble(ICollection<double> valueData)
+        static public double ArithmeticMeanDouble(ICollection<double> valueData)
         {
             double returnValue = 0;
 
@@ -131,55 +115,34 @@ namespace Quau.Services.StatisticOperation
 
             return returnValue;
         }
-        //Коефіцієнт асиметрії (зсунений, незсунений)
-        static public double Skewness_Shifted(ICollection<double> value) 
-        {
-            double valueCentralMoment = CentralMoment(value, 3);
-            double RouteMean = RouteMeanSquare(value);
 
-            double ourA = valueCentralMoment / Math.Pow(RouteMean, 3);
+        #region Skewness : (ICollection<double> value) => double - коефіцієнт асиметрії
+        static public double Skewness(ICollection<double> value) => CentralMoment(value, 3) / Math.Pow(S_Variance_Shifted(value), 3.0/2.0);
+        #endregion
 
-            return ourA;
-        }
-        static public double Skewness_unShifted(ICollection<double> value) 
-        {
-            double ourA = Skewness_Shifted(value);
-
-            int N = value.Count;
-
-            double ourAShifted = ((Math.Sqrt(N * (N - 1))) / (N - 2)) * ourA;
-
-            return ourAShifted;
-        }
-        //Коефіцієнт ексцесу (зсунений, незсунений)
-        static public double Kurtosis_Shifted(ICollection<double> value) 
-        {
-            double valueCentralMoment = CentralMoment(value, 4);
-            double RouteMean = RouteMeanSquare(value);
-
-            double ourE = valueCentralMoment / Math.Pow(RouteMean, 4);
-
-            return ourE;
-        }
-        static public double Kurtosis_unShifted(ICollection<double> value) 
-        {
-            double valueE = Kurtosis_Shifted(value);
-
-            double N = value.Count;
-            double valueEC = (N * N - 1) / ((N - 2) * (N - 3)) * ((valueE - 3) + (6 / (N + 1)));
+        #region SkewnessUnShifted : (ICollection<double> value) => double - коефіцієнт асиметрії(незсунений)
+        static public double SkewnessUnShifted(ICollection<double> value) => (Math.Sqrt(value.Count * (value.Count - 1.0)) / (value.Count - 2.0) * Skewness(value));
+        #endregion
 
 
-            return valueEC;
-        }
-        //Коефіцієнт контрексцесу
-        static public double CounterKurtosis(ICollection<double> value) => 1.0 / Math.Sqrt(Math.Abs(Kurtosis_unShifted(value)));
+        #region Kurtosis : (ICollection<double> value) => double - Коефіцієнт ексцесу
+        static public double Kurtosis(ICollection<double> value) => CentralMoment(value, 4) / Math.Pow(CentralMoment(value, 2), 2.0);
+        #endregion
 
-        //Варіація пірсона
+        #region KurtosisUnShifted : (ICollection<double> value) => double - Коефіцієнт ексцесу(незсунений)
+        static public double KurtosisUnShifted(ICollection<double> value) => ((Math.Pow(value.Count, 2.0) - 1.0) / ((value.Count - 2.0) * (value.Count - 3.0)) * 
+            ((Kurtosis(value) - 3.0) + 6.0 / (value.Count + 1.0))) ;
+        #endregion
+
+        #region CounterKurtosis : (ICollection<double> value) => double - Коефіцієнт контрексцесу
+        static public double CounterKurtosis(ICollection<double> value) => 1.0 / Math.Sqrt(Math.Abs(KurtosisUnShifted(value)));
+        #endregion
+
+        #region Pearson_Variation : (ICollection<double> value) -> double - обчислення варіації Пірсона із вибірки value
         static public double Pearson_Variation(ICollection<double> value) => RouteMeanSquare(value) / ArithmeticalMean(value);
-        //Усічене середнє
+        #endregion
 
-        //Базові кількістні характеристики
-        //Початковий статистичний момент
+        #region InitialStatisticMoment : (ICollection<double> value, int power) -> double - обчислення початкового центрального моменту із вибірки value, зі степенью power
         static public double InitialStatisticMoment(ICollection<double> value, int power)
         {
             double valueInitial = 0;
@@ -193,7 +156,9 @@ namespace Quau.Services.StatisticOperation
 
             return valueInitial;
         }
-        //Центральний момент
+        #endregion
+
+        #region CentralMoment : (ICollection<double> value, int power) -> double - обчислення центрального моменту із вибірки value, зі степенью power
         static public double CentralMoment(ICollection<double> value, int power)
         {
             double valueCentral = 0;
@@ -208,15 +173,13 @@ namespace Quau.Services.StatisticOperation
 
             return valueCentral;
         }
-        //
-
-
+        #endregion
 
         //Переделать
         //O(deltaX)
         static public double ourODeltaX_Find(ICollection<double> ourNum1)
         {
-            double ourAnswer = S_Variance_unShifte(ourNum1);
+            double ourAnswer = S_Variance_unShifted(ourNum1);
 
             ourAnswer /= Math.Sqrt(ourNum1.Count);
 
@@ -225,7 +188,7 @@ namespace Quau.Services.StatisticOperation
         //O(S)
         static public double ourOSC_Find(ICollection<double> ourNum1)
         {
-            double ourAnswer = S_Variance_unShifte(ourNum1);
+            double ourAnswer = S_Variance_unShifted(ourNum1);
 
             ourAnswer /= Math.Sqrt(2 * ourNum1.Count);
 

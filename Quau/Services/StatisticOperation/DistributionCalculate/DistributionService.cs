@@ -21,7 +21,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
             foreach (var el in valueSampleRanking) valueDoubleTemp.Add(el.SampleData);
 
             double ArtiheticMean = QuantitiveCharacteristicsService.ArithmeticalMean(valueDoubleTemp);
-            double AritheticMeanDouble = QuantitiveCharacteristicsService.AritheticMeanDouble(valueDoubleTemp);
+            double AritheticMeanDouble = QuantitiveCharacteristicsService.ArithmeticMeanDouble(valueDoubleTemp);
             double NSize = valueDoubleTemp.Count;
 
             NSize = NSize / (NSize - 1);
@@ -85,7 +85,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
             foreach (var el in valueSampleRanking) valueDoubleTemp.Add(el.SampleData);
 
             double ArithmeticMean = QuantitiveCharacteristicsService.ArithmeticalMean(valueDoubleTemp);
-            double RouteMean = QuantitiveCharacteristicsService.AritheticMeanDouble(valueDoubleTemp);
+            double RouteMean = QuantitiveCharacteristicsService.ArithmeticMeanDouble(valueDoubleTemp);
             double lambdaValue = 1 / ArithmeticMean;
 
             double aValue = ArithmeticMean - Math.Sqrt(3 * (RouteMean - Math.Pow(ArithmeticMean, 2.0)));
@@ -109,7 +109,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
             foreach (var el in valueSampleRanking) valueDoubleTemp.Add(el.SampleData);
 
             double ArtiheticMean = QuantitiveCharacteristicsService.ArithmeticalMean(valueDoubleTemp);
-            double AritheticMeanDouble = QuantitiveCharacteristicsService.AritheticMeanDouble(valueDoubleTemp);
+            double AritheticMeanDouble = QuantitiveCharacteristicsService.ArithmeticMeanDouble(valueDoubleTemp);
             double NSize = valueDoubleTemp.Count;
 
             double aValue = 1;
@@ -151,7 +151,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
             foreach (var el in valueSampleRanking) valueDoubleTemp.Add(el.SampleData);
 
             double ArtiheticMean = QuantitiveCharacteristicsService.ArithmeticalMean(valueDoubleTemp);
-            double AritheticMeanDouble = QuantitiveCharacteristicsService.AritheticMeanDouble(valueDoubleTemp);
+            double AritheticMeanDouble = QuantitiveCharacteristicsService.ArithmeticMeanDouble(valueDoubleTemp);
 
             double AValue = Math.Sqrt(2) * Math.Sqrt((AritheticMeanDouble - Math.Pow(ArtiheticMean, 2.0)));
 
@@ -177,7 +177,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
             foreach (var el in valueSampleRanking) valueDoubleTemp.Add(el.SampleData);
 
             double ArtiheticMean = QuantitiveCharacteristicsService.ArithmeticalMean(valueDoubleTemp);
-            double AritheticMeanDouble = QuantitiveCharacteristicsService.AritheticMeanDouble(valueDoubleTemp);
+            double AritheticMeanDouble = QuantitiveCharacteristicsService.ArithmeticMeanDouble(valueDoubleTemp);
             double NSize = valueDoubleTemp.Count;
 
             NSize = NSize / (NSize - 1);
@@ -191,6 +191,31 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
             }
 
             valueSample.DistributionSampleEmpirical = new ObservableCollection<DistributionSamples>(valueDistributionSample);
+
+            double DM = Math.Pow(ourO, 2.0) / valueDoubleTemp.Count;
+            double DO = Math.Pow(ourO, 2.0) / (valueDoubleTemp.Count * 2.0);
+
+            double UA = 1.9 + 0.04;
+
+            valueSample.HistogramLowerLimit = new ObservableCollection<Models.Histograma.DataValueHistogram> { };
+            valueSample.HistogramUpperLimit = new ObservableCollection<Models.Histograma.DataValueHistogram> { };
+
+            foreach (var el in valueSample.DistributionSampleEmpirical)
+            {
+                double dFdM = (1.0 / (ourO * Math.Sqrt(2.0 * Math.PI))) * Math.Exp(-(Math.Pow(el.X - ArtiheticMean, 2.0) / (2.0 * Math.Pow(ourO, 2.0))));
+                double dFdO = ((el.X - ArtiheticMean) / (Math.Pow(ourO, 2.0) * Math.Sqrt(2.0 * Math.PI))) * Math.Exp(-(Math.Pow(el.X - ArtiheticMean, 2.0) / (2.0 * Math.Pow(ourO, 2.0))));
+
+                double S_Variance = Math.Pow(dFdM, 2.0) * DM + Math.Pow(dFdO, 2.0) * DO;
+
+                double f1 = el.Y + UA * Math.Sqrt(S_Variance), f2 = el.Y - UA * Math.Sqrt(S_Variance);
+
+                f1 = f1 < 0 ? 0 : f1 > 1 ? 1 : f1;
+                f2 = f2 < 0 ? 0 : f2 > 1 ? 1 : f2;
+
+                valueSample.HistogramUpperLimit.Add(new Models.Histograma.DataValueHistogram { x = el.X, p = f1 });
+                valueSample.HistogramLowerLimit.Add(new Models.Histograma.DataValueHistogram { x = el.X, p = f2 });
+            }
+
 
             return valueSample;
         }
@@ -212,6 +237,25 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
 
             valueSample.DistributionSampleEmpirical = new ObservableCollection<DistributionSamples>(valueDistributionSample);
 
+            valueSample.HistogramLowerLimit = new ObservableCollection<Models.Histograma.DataValueHistogram> { };
+            valueSample.HistogramUpperLimit = new ObservableCollection<Models.Histograma.DataValueHistogram> { };
+
+            double UA = 1.9 + 0.04;
+
+            foreach (var el in valueSample.DistributionSampleEmpirical)
+            {
+                double S_Variance = Math.Pow(el.X, 2.0) * Math.Exp(-2 * LambdaValue * el.X) * Math.Pow(LambdaValue, 2.0) / valueDoubleTemp.Count;
+
+                double f1 = el.Y + UA * Math.Sqrt(S_Variance), f2 = el.Y - UA * Math.Sqrt(S_Variance);
+
+                f1 = f1 < 0 ? 0 : f1 > 1 ? 1 : f1;
+                f2 = f2 < 0 ? 0 : f2 > 1 ? 1 : f2;
+
+                valueSample.HistogramUpperLimit.Add(new Models.Histograma.DataValueHistogram { x = el.X, p = f1 });
+                valueSample.HistogramLowerLimit.Add(new Models.Histograma.DataValueHistogram { x = el.X, p = f2 });
+            }
+
+
             return valueSample;
         }
         static public StatisticSample EvenDistributionEmpirical(ICollection<SampleRanking> valueSampleRanking, StatisticSample valueSample)
@@ -223,7 +267,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
             foreach (var el in valueSampleRanking) valueDoubleTemp.Add(el.SampleData);
 
             double ArtiheticMean = QuantitiveCharacteristicsService.ArithmeticalMean(valueDoubleTemp);
-            double AritheticMeanDouble = QuantitiveCharacteristicsService.AritheticMeanDouble(valueDoubleTemp);
+            double AritheticMeanDouble = QuantitiveCharacteristicsService.ArithmeticMeanDouble(valueDoubleTemp);
             double LambdaValue = 1 / ArtiheticMean;
 
             double AValue = ArtiheticMean - Math.Sqrt(3 * (AritheticMeanDouble - Math.Pow(ArtiheticMean, 2.0)));
@@ -238,6 +282,32 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
 
             valueSample.DistributionSampleEmpirical = new ObservableCollection<DistributionSamples>(valueDistributionSample);
 
+            valueSample.HistogramLowerLimit = new ObservableCollection<Models.Histograma.DataValueHistogram> { };
+            valueSample.HistogramUpperLimit = new ObservableCollection<Models.Histograma.DataValueHistogram> { };
+
+            double UA = 1.9 + 0.04;
+
+            double ourDAValue = Math.Pow((BValue - AValue), 2) / (12.0 * valueDoubleTemp.Count);
+
+            double ourDBValue = (Math.Pow((BValue - AValue), 4) + 15.0 * Math.Pow(AValue + BValue, 2) * Math.Pow(BValue - AValue, 2)) / (180.0 * valueDoubleTemp.Count);
+
+            double cov = (AValue + BValue) * Math.Pow(BValue - AValue, 2) / (12 * valueDoubleTemp.Count);
+
+            foreach (var el in valueSample.DistributionSampleEmpirical)
+            {
+                double S_Variance = (Math.Pow(el.X - BValue, 2.0) / Math.Pow(BValue - AValue, 4.0)) * ourDAValue +
+                    (Math.Pow(el.X - AValue, 2.0) / Math.Pow(BValue - AValue, 4.0)) * ourDBValue +
+                    ((el.X - AValue) * (el.X - BValue) / Math.Pow(BValue - AValue, 4.0)) * cov;
+
+                double f1 = el.Y + UA * Math.Sqrt(S_Variance), f2 = el.Y - UA * Math.Sqrt(S_Variance);
+
+                f1 = f1 < 0 ? 0 : f1 > 1 ? 1 : f1;
+                f2 = f2 < 0 ? 0 : f2 > 1 ? 1 : f2;
+
+                valueSample.HistogramUpperLimit.Add(new Models.Histograma.DataValueHistogram { x = el.X, p = f1 });
+                valueSample.HistogramLowerLimit.Add(new Models.Histograma.DataValueHistogram { x = el.X, p = f2 });
+            }
+
             return valueSample;
         }
         static public StatisticSample VWeibullDistributionEmpirical(ICollection<SampleRanking> valueSampleRanking, StatisticSample valueSample)
@@ -249,7 +319,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
             foreach (var el in valueSampleRanking) valueDoubleTemp.Add(el.SampleData);
 
             double ArtiheticMean = QuantitiveCharacteristicsService.ArithmeticalMean(valueDoubleTemp);
-            double AritheticMeanDouble = QuantitiveCharacteristicsService.AritheticMeanDouble(valueDoubleTemp);
+            double AritheticMeanDouble = QuantitiveCharacteristicsService.ArithmeticMeanDouble(valueDoubleTemp);
             double LambdaValue = 1 / ArtiheticMean;
 
             double AValue = 1;
@@ -278,7 +348,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
             foreach (var el in valueSampleRanking) valueDoubleTemp.Add(el.SampleData);
 
             double ArtiheticMean = QuantitiveCharacteristicsService.ArithmeticalMean(valueDoubleTemp);
-            double AritheticMeanDouble = QuantitiveCharacteristicsService.AritheticMeanDouble(valueDoubleTemp);
+            double AritheticMeanDouble = QuantitiveCharacteristicsService.ArithmeticMeanDouble(valueDoubleTemp);
 
             double AValue = Math.Sqrt(2) * Math.Sqrt((AritheticMeanDouble - Math.Pow(ArtiheticMean, 2.0)));
 
@@ -323,7 +393,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
             foreach (var el in valueSampleRanking) valueDoubleTemp.Add(el.SampleData);
 
             double ArtiheticMean = Math.Round(QuantitiveCharacteristicsService.ArithmeticalMean(valueDoubleTemp), valueSample.RoundValue); //Мат сподівання
-            double AritheticMeanDouble = Math.Round(QuantitiveCharacteristicsService.AritheticMeanDouble(valueDoubleTemp), valueSample.RoundValue);
+            double AritheticMeanDouble = Math.Round(QuantitiveCharacteristicsService.ArithmeticMeanDouble(valueDoubleTemp), valueSample.RoundValue);
             double NSize = valueDoubleTemp.Count;
 
             NSize = NSize / (NSize - 1);
@@ -334,7 +404,9 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
 
             double ourDO = Math.Round(Math.Pow(ourO, 2) / (2 * valueDoubleTemp.Count), valueSample.RoundValue);
 
-            double covArithmeticMeanO = 0;
+            ourO = Math.Round(ourO, valueSample.RoundValue);
+            ourDArithmeticMean = Math.Round(ourDArithmeticMean, valueSample.RoundValue);
+            ourDO = Math.Round(ourDO, valueSample.RoundValue);
 
             String returnValue = $"\n##############################################" + 
                 $"\nДовірче оцінювання: m    |   Sigma" + 
@@ -362,10 +434,13 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
 
             double ourDLambda = Math.Pow(lambdaValue, 2) / valueDoubleTemp.Count;
 
+            lambdaValue = Math.Round(lambdaValue, valueSample.RoundValue);
+            ourDLambda = Math.Round(ourDLambda, valueSample.RoundValue);
+
             String returnValue = $"\n##############################################" +
                 $"\nДовірче оцінювання: LambdaValue" +
-                $"\nОцінка:             {lambdaValue}" +
-                $"\nДисперсія:          {ourDLambda}" +
+                $"\nОцінка:             {Math.Round(lambdaValue, valueSample.RoundValue)}" +
+                $"\nДисперсія:          {Math.Round(ourDLambda, valueSample.RoundValue)}" +
                 $"\nВерхня межа:        {lambdaValue + Math.Round(Math.Sqrt(ourDLambda), valueSample.RoundValue)}" +
                 $"\nНижня межа:         {lambdaValue - Math.Round(Math.Sqrt(ourDLambda), valueSample.RoundValue)}" +
                 $"\n##############################################";
@@ -384,7 +459,7 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
             foreach (var el in valueSampleRanking) valueDoubleTemp.Add(el.SampleData);
 
             double ArithmeticMean = QuantitiveCharacteristicsService.ArithmeticalMean(valueDoubleTemp);
-            double RouteMean = QuantitiveCharacteristicsService.AritheticMeanDouble(valueDoubleTemp);
+            double RouteMean = QuantitiveCharacteristicsService.ArithmeticMeanDouble(valueDoubleTemp);
             double lambdaValue = 1 / ArithmeticMean;
 
             double aValue = ArithmeticMean - Math.Sqrt(3 * (RouteMean - Math.Pow(ArithmeticMean, 2.0)));
@@ -395,11 +470,12 @@ namespace Quau.Services.StatisticOperation.DistributionCalculate
             double ourDBValue = (Math.Pow((bValue - aValue), 4) + 15.0 * Math.Pow(aValue + bValue, 2) * Math.Pow(bValue - aValue, 2)) / (180.0 * valueDoubleTemp.Count);
 
             double cov = (aValue + bValue) * Math.Pow(bValue - aValue, 2) / (12 * valueDoubleTemp.Count);
-
+            aValue = Math.Round(aValue, valueSample.RoundValue);
+            bValue = Math.Round(bValue, valueSample.RoundValue);
             String returnValue = $"\n##############################################" +
                 $"\nДовірче оцінювання: a    |   b" +
                 $"\nОцінка:             {aValue}    |    {bValue}" +
-                $"\nДисперсія:          {ourDAValue} | {ourDBValue}" +
+                $"\nДисперсія:          {Math.Round(ourDAValue, valueSample.RoundValue)} | {Math.Round(ourDBValue,valueSample.RoundValue)}" +
                 $"\nВерхня межа:        {aValue + Math.Round(Math.Sqrt(ourDAValue), valueSample.RoundValue)} | {bValue + Math.Round(Math.Sqrt(ourDBValue), valueSample.RoundValue)}" +
                 $"\nНижня межа:         {aValue - Math.Round(Math.Sqrt(ourDAValue), valueSample.RoundValue)} | {bValue - Math.Round(Math.Sqrt(ourDBValue), valueSample.RoundValue)}" +
                 $"\n##############################################";

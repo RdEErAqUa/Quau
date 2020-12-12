@@ -22,7 +22,9 @@
                 <TextBox Text="Середнє арифметичне" IsReadOnly="True"/>
                 <TextBox Text="Средньоквадратичне" IsReadOnly="True"/>
                 <TextBox Text="Коефіцієнт ассиметрії" IsReadOnly="True"/>
+                <TextBox Text="Коефіцієнт ассиметрії(незсунений)" IsReadOnly="True"/>
                 <TextBox Text="Коефіцієнт ексцесу" IsReadOnly="True"/>
+                <TextBox Text="Коефіцієнт ексцесу(незсунений)" IsReadOnly="True"/>
                 <TextBox Text="Коефіцієнт контрексцесу" IsReadOnly="True"/>
                 <TextBox Text="Варіація Пірсона" IsReadOnly="True"/>
                 <TextBox Text="MED" IsReadOnly="True"/>
@@ -32,8 +34,10 @@
                 <TextBox Text="{Binding MainModel.SelectedSampleData.ClassSize}"/>
                 <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.AritmeitcMean}" IsReadOnly="True"/>
                 <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.RouteMeanSquare}" IsReadOnly="True"/>
-                <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.Skewness_Shifted}" IsReadOnly="True"/>
-                <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.Kurtosis_Shifted}" IsReadOnly="True"/>
+                <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.Skewness}" IsReadOnly="True"/>
+                <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.SkewnessUnShifted}" IsReadOnly="True"/>
+                <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.Kurtosis}" IsReadOnly="True"/>
+                <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.KurtosisUnShifted}" IsReadOnly="True"/>
                 <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.CounterKurtosis}" IsReadOnly="True"/>
                 <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.Pearson_Variation}" IsReadOnly="True"/>
                 <TextBox Text="{Binding MainModel.SelectedSampleData.QuantitiveCharactacteristics.MED}" IsReadOnly="True"/>

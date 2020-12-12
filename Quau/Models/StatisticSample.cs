@@ -16,7 +16,7 @@ namespace Quau.Models
     internal class StatisticSample : BaseModel
     {
         //Одновимірна вибірка
-        //M - class count
+
         #region ClassSize : double - кількість классів
         private double _ClassSize;
         public double ClassSize
@@ -33,8 +33,9 @@ namespace Quau.Models
                     }
                 }
                 StatisticOperationLauncher.StartStatisticOperation(this);
-                QuantitiveCharacteristicsService.QuantitiveCharacteristics(this);
+                QuantitiveCharactacteristics = new unShiftedShiftedQuantitiveCharacteristics(this.Sample, RoundValue);
                 HistogramDataValue = new ObservableCollection<DataValueHistogram>(CreateEmpiricalData.CreateEmpiricalDataValue(this));
+                QuantitiveCharacteristicsService.QuantitiveCharacteristics(this);
             }
         }
         #endregion
@@ -43,7 +44,7 @@ namespace Quau.Models
         public string fileName { get; set; }
 
         public int RoundValue { get; set; }
-        //
+        
         #region Sample : ObservableCollection<double> - колекція вхідних даних
         private ObservableCollection<double> _Sample;
         public ObservableCollection<double> Sample
@@ -55,7 +56,7 @@ namespace Quau.Models
             }
         }
         #endregion
-        //
+        
         #region SampleDataRanking : ObservableCollection<SampleRanking> - варіаційний ряд
         private ObservableCollection<SampleRanking> _SampleDataRanking;
         public ObservableCollection<SampleRanking> SampleDataRanking
@@ -66,7 +67,7 @@ namespace Quau.Models
             }
         }
         #endregion
-        //
+        
         #region SampleDivisionINClass : ObservableCollection<SamplePrimaryDivisionINClass> - розбиття на класи
         private ObservableCollection<SamplePrimaryDivisionINClass> _SampleDaSampleDivisionINClass;
         public ObservableCollection<SamplePrimaryDivisionINClass> SampleDivisionINClass
@@ -77,12 +78,12 @@ namespace Quau.Models
             }
         }
         #endregion
-        //
+        
         #region QuantitiveCharactacteristics : unShiftedShiftedQuantitiveCharacteristics - оцінки параметрів
         private unShiftedShiftedQuantitiveCharacteristics _QuantitiveCharactacteristics;
         public unShiftedShiftedQuantitiveCharacteristics QuantitiveCharactacteristics { get => _QuantitiveCharactacteristics; set => Set(ref _QuantitiveCharactacteristics, value); }
         #endregion
-        //
+        
         #region DistributionSample : ObservableCollection<DistributionSamples> - функція щільності
         private ObservableCollection<DistributionSamples> _DistributionSample;
         public ObservableCollection<DistributionSamples> DistributionSample
@@ -93,7 +94,7 @@ namespace Quau.Models
             }
         }
         #endregion
-        //
+        
         #region DistributionSampleEmpirical : ObservableCollection<DistributionSamples> - функція ймовірностей
         private ObservableCollection<DistributionSamples> _DistributionSampleEmpirical;
         public ObservableCollection<DistributionSamples> DistributionSampleEmpirical
@@ -104,7 +105,7 @@ namespace Quau.Models
             }
         }
         #endregion
-        //
+        
         #region HistogramDataValue : ICollection<DataValueHistogram> - данные о эмпирической функции распределения
 
         private ObservableCollection<DataValueHistogram> _HistogramDataValue;
@@ -112,7 +113,23 @@ namespace Quau.Models
         public ObservableCollection<DataValueHistogram> HistogramDataValue { get => _HistogramDataValue; set => Set(ref _HistogramDataValue, value); }
 
         #endregion
-        //
+
+        #region HistogramLowerLimit : ICollection<DataValueHistogram> - данные о эмпирической функции распределения, верхняя грань
+
+        private ObservableCollection<DataValueHistogram> _HistogramLowerLimit;
+
+        public ObservableCollection<DataValueHistogram> HistogramLowerLimit { get => _HistogramLowerLimit; set => Set(ref _HistogramLowerLimit, value); }
+
+        #endregion
+
+        #region HistogramUpperLimit : ICollection<DataValueHistogram> - данные о эмпирической функции распределения, нижняя грань
+
+        private ObservableCollection<DataValueHistogram> _HistogramUpperLimit;
+
+        public ObservableCollection<DataValueHistogram> HistogramUpperLimit { get => _HistogramUpperLimit; set => Set(ref _HistogramUpperLimit, value); }
+
+        #endregion
+
         #region DistributionProtocol : String - протокол довірчого інтервального оцінювання, та оцінок параметрів розподілу
 
         private String _DistributionProtocol;
@@ -120,7 +137,7 @@ namespace Quau.Models
         public String DistributionProtocol { get => _DistributionProtocol; set => Set(ref _DistributionProtocol, value); }
 
         #endregion
-        //
+
         #region IntervalProtocol : String - протокол довірчого інтервального оцінювання
 
         private String _IntervalProtocol;

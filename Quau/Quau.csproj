@@ -35,6 +35,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LiveCharts, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.0.9.7\lib\net45\LiveCharts.dll</HintPath>
+    </Reference>
+    <Reference Include="LiveCharts.Wpf, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.Wpf.0.9.7\lib\net45\LiveCharts.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="OxyPlot, Version=2.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
       <HintPath>..\packages\OxyPlot.Core.2.0.0\lib\net45\OxyPlot.dll</HintPath>
     </Reference>
@@ -98,17 +104,20 @@
     <Compile Include="Infrastructure\Commands\Base\Command.cs" />
     <Compile Include="Infrastructure\Commands\LambdaCommand.cs" />
     <Compile Include="Models\Base\BaseModel.cs" />
+    <Compile Include="Models\DimentionalModel\Two\TwoDimentionalSample.cs" />
     <Compile Include="Models\DistributionConsent\DistributionConsentTest.cs" />
     <Compile Include="Models\DistributionSet\DistributionSamples.cs" />
     <Compile Include="Models\Histograma\DataValueHistogram.cs" />
     <Compile Include="Models\ModelingSample\ModelingSample.cs" />
+    <Compile Include="Models\ModelingSample\TSample.cs" />
     <Compile Include="Models\Quantiles.cs" />
     <Compile Include="Models\SamplePrimaryDivisionINClass.cs" />
     <Compile Include="Models\SampleRanking.cs" />
     <Compile Include="Models\StatisticSample.cs" />
     <Compile Include="Models\TTest.cs" />
+    <Compile Include="Models\TwoDimentionalStatisticSample.cs" />
+    <Compile Include="Models\XYModel\XYData.cs" />
     <Compile Include="Services\DataConvertor.cs" />
-    <Compile Include="Services\FileOpenLoad\Base\IDialogService.cs" />
     <Compile Include="Services\FileOpenLoad\ReadDataService.cs" />
     <Compile Include="Services\FileOpenLoad\SaveDialogSerivce.cs" />
     <Compile Include="Services\StatisticOperation\AnomalyData\RemoveAnomalyData.cs" />
@@ -169,6 +178,8 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Services\FileOpenLoad\Base\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

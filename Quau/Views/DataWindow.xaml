@@ -73,7 +73,23 @@
                 </DockPanel>
             </TabItem>
             <TabItem Header="Протокол(Змодельованого розподілу)">
-                <TextBox Text="{Binding RecordValue}"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <DataGrid ItemsSource="{Binding TSamples}" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Size}" Width="*" Header="Обсяг"/>
+                            <DataGridTextColumn Binding="{Binding tDelta}" Width="*" Header="T-статистика"/>
+                            <DataGridTextColumn Binding="{Binding tDeltaSquare}" Width="*" Header="СКВ Т-статистики"/>
+                            <DataGridTextColumn Binding="{Binding aValue}" Width="*" Header="Рівень значущості"/>
+                            <DataGridTextColumn Binding="{Binding criticalValue}" Width="*" Header="Т-критичне"/>
+                            <DataGridCheckBoxColumn Binding="{Binding isPassed}" Width="*" Header="Тест пройдено"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBox Grid.Row="1" Text="{Binding RecordValue}"/>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>
