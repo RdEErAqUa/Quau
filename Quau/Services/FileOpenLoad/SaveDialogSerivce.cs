@@ -1,9 +1,8 @@
-﻿using Quau.Services.FileOpenLoad.Base;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 
 namespace Quau.Services.FileOpenLoad
 {
-    class SaveDialogSerivce : IDialogService
+    class SaveDialogSerivce
     {
         public string FilePath { get; set; }
 
@@ -16,15 +15,6 @@ namespace Quau.Services.FileOpenLoad
                 return true;
             }
             return false;
-        }
-
-        public bool SaveFileDialog()
-        {
-            return false;
-        }
-
-        public void ShowMessage(string message)
-        {
         }
     }
 }

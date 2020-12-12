@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Quau"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        xmlns:oxy="http://oxyplot.org/wpf"
         xmlns:vm="clr-namespace:Quau.ViewModels"
         xmlns:v="clr-namespace:Quau.Views"
         Title="MainWindow" Height="450" Width="800">
@@ -29,8 +31,10 @@
                 <MenuItem Header="Логарифмування" Command="{Binding AnomalyDataRemove}" CommandParameter="2"/>
             </MenuItem>
             <MenuItem Header="Розрахунки">
-                <MenuItem Header="Однорідність вибірок(залежні)" Command="{Binding CheckUniformyDependent}" CommandParameter="{Binding ElementName=DataValueBox, Path=SelectedItems}"/>
-                <MenuItem Header="Однорідність вибірок(незалежні)" Command="{Binding CheckUniformy}" CommandParameter="{Binding ElementName=DataValueBox, Path=SelectedItems}"/>
+                <MenuItem Header="Однорідність вибірок за нормальним розподілом(залежні)" Command="{Binding CheckUniformyDependent}" CommandParameter="{Binding ElementName=DataValueBox, Path=SelectedItems}"/>
+                <MenuItem Header="Однорідність вибірок за нормальним розподілом(незалежні)" Command="{Binding CheckUniformy}" CommandParameter="{Binding ElementName=DataValueBox, Path=SelectedItems}"/>
+                <MenuItem Header="Однорідність вибірок за будь-яким розподілом(залежні)" Command="{Binding CheckUniformyDependentElse}" CommandParameter="{Binding ElementName=DataValueBox, Path=SelectedItems}"/>
+                <MenuItem Header="Однорідність вибірок за будь-яким розподілом(незалежні)" Command="{Binding CheckUniformyElse}" CommandParameter="{Binding ElementName=DataValueBox, Path=SelectedItems}"/>
                 <MenuItem Header="Аббе тест" Command="{Binding AbbeTestRun}"/>
             </MenuItem>
             <MenuItem Header="Параметри">
@@ -49,7 +53,15 @@
                 <RowDefinition Height="125*" MinHeight="100"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0" Grid.Column="0">
-                <v:GraphFunctionWindow DataContext="{Binding GraphFunctionWindowModel}"/>
+                <TabControl>
+                    <TabItem Header="Одновимірна">
+                        <v:GraphFunctionWindow DataContext="{Binding GraphFunctionWindowModel}"/>
+                    </TabItem>
+                    <TabItem Header="Двовимірна">
+                        <lvc:CartesianChart Grid.Row="1" Series="{Binding TwoDimentional.Values}">
+                        </lvc:CartesianChart>
+                    </TabItem>
+                </TabControl>
             </Grid>
             <Grid Grid.Row="2" Grid.Column="0">
                 <Grid.ColumnDefinitions>

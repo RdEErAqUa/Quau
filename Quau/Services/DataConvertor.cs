@@ -19,7 +19,6 @@ namespace Quau.Services
                 var returnValue = dataValue.Split(' ').
                         Where(x => !string.IsNullOrWhiteSpace(x)).
                         Select(x => double.Parse(x)).ToArray().ToList();
-                returnValue.Sort();
 
                 var returnValue2 = dataValue.Split(separator);
 

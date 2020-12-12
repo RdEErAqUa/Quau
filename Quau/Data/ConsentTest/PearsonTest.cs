@@ -42,7 +42,6 @@ namespace Quau.Data.ConsentTest
 
                 p.Add(pr - pl);
                 E.Add(statisticSamples.Sample.Count * p[i]);
-
                 n.Add(nValue);
                 if (E[i] != 0)
                     x += (Math.Pow(n[i] - E[i], 2.0) / E[i]);

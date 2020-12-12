@@ -2,6 +2,7 @@
 using Quau.Infrastructure.Commands;
 using Quau.Models;
 using Quau.Models.ModelingSample;
+using Quau.Services.StatisticOperation;
 using Quau.ViewModels.Base;
 using System;
 using System.Collections.Generic;
@@ -56,6 +57,14 @@ namespace Quau.ViewModels
 
         #endregion
 
+        #region samples : ObservableCollection<TSample> - представлення т-статистики в таблицы
+
+        private ObservableCollection<TSample> _TSamples;
+
+        public ObservableCollection<TSample> TSamples { get => _TSamples; set => Set(ref _TSamples, value); }
+
+        #endregion
+
         /* ------------------------------------------------------------------------- */
         #region  TTestFind - Однородность выборки зависимых
         public ICommand TTestFind { get; }
@@ -87,7 +96,7 @@ namespace Quau.ViewModels
         private void OnModelingExponentialSampleExecuted(object p)
         {
             ModelingSamples = new ModelingSample();
-
+            TSamples = new ObservableCollection<TSample>();
             ModelingSamples.statisticSamples_10 = ModelingElement.modelingElement(10, lambdaValue, 400, ModelingSamples.statisticSamples_10, ModelingSamples.tValue_10);
             ModelingSamples.statisticSamples_40 = ModelingElement.modelingElement(40, lambdaValue, 400, ModelingSamples.statisticSamples_40, ModelingSamples.tValue_40);
             ModelingSamples.statisticSamples_100 = ModelingElement.modelingElement(100, lambdaValue, 400, ModelingSamples.statisticSamples_100, ModelingSamples.tValue_100);
@@ -106,6 +115,18 @@ namespace Quau.ViewModels
             double deltaT400 = Math.Round(Math.Abs(ModelingSamples.tValue_400.Sum() / 400.0), 4);
             double deltaT1000 = Math.Round(Math.Abs(ModelingSamples.tValue_1000.Sum() / 400.0), 4);
 
+            double deltaRootT10 = Math.Round(deltaT10 / Math.Sqrt(10), 4);
+            double deltaRootT40 = Math.Round(deltaT40 / Math.Sqrt(40), 4);
+            double deltaRootT100 = Math.Round(deltaT100 / Math.Sqrt(100), 4);
+            double deltaRootT400 = Math.Round(deltaT400 / Math.Sqrt(400), 4);
+            double deltaRootT1000 = Math.Round(deltaT1000 / Math.Sqrt(1000), 4);
+
+            TSamples.Add(new TSample(10, deltaT10, deltaRootT10, 0.5, 0.7, deltaT10 < 0.7));
+            TSamples.Add(new TSample(40, deltaT40, deltaRootT40, 0.5, 0.681, deltaT40 < 0.681));
+            TSamples.Add(new TSample(100, deltaT100, deltaRootT100, 0.25, 1.16, deltaT100 < 1.16));
+            TSamples.Add(new TSample(400, deltaT400, deltaRootT400, 0.1, 1.64, deltaT400 < 1.64));
+            TSamples.Add(new TSample(1000, deltaT1000, deltaRootT1000, 0.05, 1.96, deltaT1000 < 1.96));
+
             string T10 = deltaT10 > 0.7 ? " > 0.7. Гіпотезу спростовано, змодельованні виборки в середньому - статистично відмінні" 
                 : " < 0.7. Гіпотеза підтвердженна, змодельованні виборки в середньому - статистично невідмінні";
             string T40 = deltaT40 > 0.681 ? " > 0.681. Гіпотезу спростовано, змодельованні виборки в середньому - статистично відмінні" 
@@ -117,7 +138,8 @@ namespace Quau.ViewModels
             string T1000 = deltaT1000 > 1.96 ? " > 1.96. Гіпотезу спростовано, змодельованні виборки в середньому - статистично відмінні" 
                 : " < 1.96. Гіпотеза підтвердженна, змодельованні виборки в середньому - статистично невідмінні";
 
-            RecordValue = $"Головна гіпотеза - H0 : ^O = ^-O. Для кожного тестування визначається власне значення a(в залежності від кількості даних)" +
+            RecordValue = 
+                $"Головна гіпотеза - H0 : ^O = ^-O. Для кожного тестування визначається власне значення a(в залежності від кількості даних)" +
                 $"\nПорівняння t для 10, при a = 0.5 : {deltaT10}" + T10 +
                 $"\nПорівняння t для 40, при a = 0.5 : {deltaT40}" + T40 +
                 $"\nПорівняння t для 100, при a = 0.25 : {deltaT100}" + T100 +

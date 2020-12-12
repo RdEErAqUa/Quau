@@ -59,7 +59,34 @@ namespace Quau.ViewModels
         {
             set
             {
-                SampleData = new List<StatisticSample> { new StatisticSample { Sample = new ObservableCollection<double>(DataConvertor.DataConvertorStrToDouble(ReadDataService.ReadData(value))), fileName = value.Split('\\').Last() } };
+                var deb = DataConvertor.DataConvertorStrToDouble(ReadDataService.ReadData(value)).ToList();
+
+                var temp = new List<double> { };
+
+                foreach(var el in deb)
+                {
+                    temp.Add(el);
+                }
+
+                deb.Sort();
+
+                SampleData = new List<StatisticSample> { new StatisticSample { Sample = new ObservableCollection<double>(deb), fileName = value.Split('\\').Last() } };
+
+                if(temp.Count % 2 == 0)
+                {
+                    ObservableCollection<(double, double)> sample = new ObservableCollection<(double, double)> { };
+
+                    for(int i = 0; i < temp.Count - 1; i += 2)
+                    {
+                        sample.Add((temp[i], temp[i + 1]));
+                    }
+
+                    TwoDimentional = new TwoDimentionalStatisticSample { TwoDimensionalSample = sample};
+
+                    TwoDimentional.SeparateInTwoSample();
+
+                    TwoDimentional.SetTwoDimentionalSample();
+                }
             }
         }
 
@@ -112,6 +139,15 @@ namespace Quau.ViewModels
         public TTest TTestValue { get => _TTestValue; set => Set(ref _TTestValue, value); }
 
         #endregion
+
+        #region TwoDimentionalSample : TwoDimentionalStatisticSample - выборка двойного измерения
+
+        private TwoDimentionalStatisticSample _TwoDimentional;
+
+        public TwoDimentionalStatisticSample TwoDimentional { get => _TwoDimentional; set => Set(ref _TwoDimentional, value); }
+
+        #endregion
+
         #endregion
 
 
@@ -172,9 +208,9 @@ namespace Quau.ViewModels
                     break;
                 default:
                     return;
-            }
-            double Kolmogorov = KolmogorovTest.KolmogorovTest_Invoke(SelectedSampleData);
-            double Pearson = PearsonTest.PearsonTest_Invoke(SelectedSampleData);
+            }  //Побудова розподілу за вибраним критерієм(експоненціальній, нормальний, та інші)
+            double Kolmogorov = KolmogorovTest.KolmogorovTest_Invoke(SelectedSampleData);  //Обрахування оцінки Колмогорова
+            double Pearson = PearsonTest.PearsonTest_Invoke(SelectedSampleData); //Обрахування оцінки Пірсона
 
             double A = SelectedSampleData.Sample.Count < 60 ? 0.5 : 0.2;
 
@@ -184,15 +220,16 @@ namespace Quau.ViewModels
 
             quantiles.XI2Quantiles();
 
-
-
             String PearsonValue = A == 0.5 ?
                 (Math.Abs(Pearson) < quantiles.XI2_a0_5[(int)SelectedSampleData.ClassSize - 1] ? 
-                $" < {quantiles.XI2_a0_5[(int)SelectedSampleData.ClassSize - 1]}, отже емпірична функція відповідає теоретичному" : $" > {quantiles.XI2_a0_5[(int)SelectedSampleData.ClassSize - 1]}, отже емпірична функція невідповідає теоретичному") :
+                $" < {quantiles.XI2_a0_5[(int)SelectedSampleData.ClassSize - 1]}, отже емпірична функція відповідає теоретичному" : $" " +
+                $"> {quantiles.XI2_a0_5[(int)SelectedSampleData.ClassSize - 1]}, отже емпірична функція невідповідає теоретичному") :
                 (Math.Abs(Pearson) < quantiles.XI2_a0_2[(int)SelectedSampleData.ClassSize - 1] ?
-                $" < {quantiles.XI2_a0_2[(int)SelectedSampleData.ClassSize - 1]}, отже емпірична функція відповідає теоретичному" : $" > {quantiles.XI2_a0_2[(int)SelectedSampleData.ClassSize - 1]}, отже емпірична функція невідповідає теоретичному");
+                $" < {quantiles.XI2_a0_2[(int)SelectedSampleData.ClassSize - 1]}, отже емпірична функція відповідає теоретичному" : $" " +
+                $"> {quantiles.XI2_a0_2[(int)SelectedSampleData.ClassSize - 1]}, отже емпірична функція невідповідає теоретичному");
 
-            SelectedSampleData.DistributionProtocol += $"\nПри a - {A}, так як кількість даних - {SelectedSampleData.Sample.Count}. Перше число в порівнянні - це критерій згоди, друге - a(для Колмогорова), квантиль XI2 - для Пірсона" +
+            SelectedSampleData.DistributionProtocol += $"\nПри a - {A}, так як кількість даних - {SelectedSampleData.Sample.Count}. " +
+                $"Перше число в порівнянні - це критерій згоди, друге - a(для Колмогорова), квантиль XI2 - для Пірсона" +
                 $"\nКритерій згоди Колмогоров : {Kolmogorov}" + KolmogorovRecord  +  
                 $"\nКритерій згоди Пірсон(при степені вільності,v = {SelectedSampleData.ClassSize - 1}) : {Math.Abs(Pearson)}" + PearsonValue;
             SelectedSampleData.DistributionConsentTests = new DistributionConsentTest { KolmogorovTest = Kolmogorov, PirsonTest = Pearson };
@@ -244,9 +281,9 @@ namespace Quau.ViewModels
             foreach (var el in items)
                 valuesSample.Add((StatisticSample)el);
 
-            RecordValue = "";
+            RecordValue = $"Перевірка однорідностей вибірок: перше число, з яким порівнюється - сама оцінка, друге число - квантиль, з яким іде порівняння";
 
-            RecordValue = Uniformy.UniformyRunIndependent(valuesSample, RecordValue);
+            RecordValue = Uniformy.UniformyNormalRunIndependent(valuesSample, RecordValue);
 
         }
         #endregion
@@ -270,7 +307,54 @@ namespace Quau.ViewModels
                 valuesSample.Add((StatisticSample)el);
             RecordValue = "";
 
-            RecordValue = Uniformy.UniformyRunDependent(valuesSample, RecordValue);
+            RecordValue = Uniformy.UniformyNormalRunDependent(valuesSample, RecordValue);
+        }
+        #endregion
+
+        #region  CheckUniformyDependentElse - Однородность выборки зависимых
+        public ICommand CheckUniformyDependentElse { get; }
+
+        private bool CanCheckUniformyDependentElseExecute(object p)
+        {
+            return true;
+        }
+
+        private void OnCheckUniformyDependentElseExecuted(object p)
+        {
+            var items = (System.Collections.ICollection)p;
+            int sizeOfValue = items.Count;
+
+            ICollection<StatisticSample> valuesSample = new List<StatisticSample> { };
+
+            foreach (var el in items)
+                valuesSample.Add((StatisticSample)el);
+            RecordValue = "";
+
+            RecordValue = Uniformy.UniformyElseRunDependent(valuesSample, RecordValue);
+        }
+        #endregion
+
+        #region  CheckUniformyElse - Однородность выборки независимых
+        public ICommand CheckUniformyElse { get; }
+
+        private bool CanCheckUniformyElseyExecute(object p)
+        {
+            return true;
+        }
+
+        private void OnCheckUniformyElseExecuted(object p)
+        {
+            var items = (System.Collections.ICollection)p;
+            int sizeOfValue = items.Count;
+
+            ICollection<StatisticSample> valuesSample = new List<StatisticSample> { };
+
+            foreach (var el in items)
+                valuesSample.Add((StatisticSample)el);
+
+            RecordValue = $"Перевірка однорідностей вибірок: перше число, з яким порівнюється - сама оцінка, друге число - квантиль, з яким іде порівняння";
+
+            RecordValue = Uniformy.UniformyElseRunIndependent(valuesSample, RecordValue);
 
         }
         #endregion
@@ -337,6 +421,9 @@ namespace Quau.ViewModels
 
             DataWindowModel = new DataWindowViewModel(this);
 
+            CheckUniformyDependentElse = new LambdaCommand(OnCheckUniformyDependentElseExecuted, CanCheckUniformyDependentElseExecute);
+
+            CheckUniformyElse = new LambdaCommand(OnCheckUniformyElseExecuted, CanCheckUniformyElseyExecute);
 
             GetFileName = new LambdaCommand(OnGetFileNameExecuted, CanGetFileNameExecute);
 

@@ -26,6 +26,10 @@
                               ItemsSource="{Binding SelectedSampleData.SampleDivisionINClass}"
                                                 DataFieldX="SampleDivisionData"
                                                 DataFieldY="SampleDivisionDataRelativeFrequency"/>
+            <oxy:ScatterSeries Color="Green"
+                              ItemsSource="{Binding SelectedSampleData.QuantitiveCharactacteristics.AritmeitcMeanConfidenceInterval}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
             <oxy:LineSeries Color="Red"
                               ItemsSource="{Binding SelectedSampleData.DistributionSample}"
                                                 DataFieldX="X"
@@ -33,9 +37,17 @@
         </oxy:Plot>
         <oxy:Plot Grid.Row="0" Grid.Column="1">
             <oxy:Plot.Axes>
-                <oxy:LinearAxis Position="Left"/>
+                <oxy:LinearAxis Position="Left"/> 
                 <oxy:LinearAxis Position="Bottom"/>
             </oxy:Plot.Axes>
+            <oxy:LineSeries Color="Green"
+                              ItemsSource="{Binding SelectedSampleData.HistogramUpperLimit}"
+                                                DataFieldX="x"
+                                                DataFieldY="p"/>
+            <oxy:LineSeries Color="Green"
+                              ItemsSource="{Binding SelectedSampleData.HistogramLowerLimit}"
+                                                DataFieldX="x"
+                                                DataFieldY="p"/>
             <oxy:StairStepSeries Color="Black"
                               ItemsSource="{Binding SelectedSampleData.HistogramDataValue}"
                                                 DataFieldX="x"
