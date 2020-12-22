@@ -310,6 +310,73 @@ namespace Quau.Data.UniformySamples
             return H;
         } //H - тест
 
+        static public double uniformyGTest15Element(ICollection<StatisticSample> values) // Критерій знаків Q - тест
+        {
+            List<double> fullSample = new List<double> { };
+
+            for (int i = 0; i < values.ElementAt(0).Sample.Count; i++)
+            {
+                fullSample.Add(values.ElementAt(0).Sample[i] - values.ElementAt(1).Sample[i]);
+            }
+            fullSample.Sort();
+
+            double Q = 0;
+
+            List<double> rightSample = new List<double> { };
+
+            foreach (var el in fullSample)
+            {
+                if (el > 0)
+                    rightSample.Add(1);
+                else if (el < 0)
+                    rightSample.Add(0);
+            }
+
+            int S = (int)rightSample.Sum();
+
+            int N = rightSample.Count;
+
+            double a0 = 0;
+
+            for (int i = 0; i < N - S; i++)
+            {
+                a0 += (FindFactorial(i) / (FindFactorial(N) * FindFactorial(N - i)));
+            }
+            a0 *= Math.Pow(2, -N);
+
+            return a0;
+        }
+
+        static public double uniformyGTestMore15Element(ICollection<StatisticSample> values) // Критерій знаків Q - тест
+        {
+            List<double> fullSample = new List<double> { };
+
+            for (int i = 0; i < values.ElementAt(0).Sample.Count; i++)
+            {
+                fullSample.Add(values.ElementAt(0).Sample[i] - values.ElementAt(1).Sample[i]);
+            }
+            fullSample.Sort();
+
+            double Q = 0;
+
+            List<double> rightSample = new List<double> { };
+
+            foreach (var el in fullSample)
+            {
+                if (el > 0)
+                    rightSample.Add(1);
+                else if (el < 0)
+                    rightSample.Add(0);
+            }
+
+            int S = (int)rightSample.Sum();
+
+            int N = rightSample.Count;
+
+            double SAnswer = (2 * S - 1 - N) / Math.Sqrt(N);
+
+            return SAnswer;
+        }
         static public double uniformyKolmogorovaSmirnova(ICollection<StatisticSample> values)
         {
             var data1 = CreateEmpiricalData.CreateEmpiricalDataValue(values.ElementAt(0));
@@ -346,7 +413,56 @@ namespace Quau.Data.UniformySamples
 
             }
 
-            return 1.0 - (1.0 - Math.Exp(-2.0 * Math.Pow(answerValue.Max(), 2.0)));
+            return (1.0 - Math.Exp(-2.0 * Math.Pow(answerValue.Max(), 2.0)));
+        }
+
+        static public double uniformyQTest(ICollection<StatisticSample> values)
+        {
+            List<double> XValue = new List<double> { };
+
+            for (int i = 0; i < values.ElementAt(0).Sample.Count; i++)
+            {
+                double XSum = 0;
+                foreach (var el in values)
+                    XSum += el.Sample[i];
+                XValue.Add(XSum);
+            }
+
+            List<double> YValue = new List<double> { };
+
+            foreach (var el in values)
+                YValue.Add(el.Sample.Sum());
+
+            int K = values.Count;
+
+            double Q = 0;
+
+            double Q1 = 0;
+            double Q2 = 0;
+
+            for(int i = 0; i < K; i++)
+            {
+                Q += Math.Pow(YValue[i] - YValue.Average(), 2.0);
+            }
+
+            for(int i = 0; i < XValue.Count; i++)
+            {
+                Q1 += XValue[i];
+                Q2 += Math.Pow(XValue[i], 2.0);
+            }
+
+            Q = K * (K - 1.0) * (Q) / ((Q1 * K) - (Q2));
+
+            return Math.Abs(Q);
+        }
+
+        //Факториал
+        static public double FindFactorial(int value)
+        {
+            if (value == 0)
+                return 1;
+            else
+                return value * FindFactorial(value - 1);
         }
     }
 }

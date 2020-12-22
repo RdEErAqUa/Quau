@@ -104,6 +104,7 @@
     <Compile Include="Infrastructure\Commands\Base\Command.cs" />
     <Compile Include="Infrastructure\Commands\LambdaCommand.cs" />
     <Compile Include="Models\Base\BaseModel.cs" />
+    <Compile Include="Models\DataXModel.cs" />
     <Compile Include="Models\DimentionalModel\Two\TwoDimentionalSample.cs" />
     <Compile Include="Models\DistributionConsent\DistributionConsentTest.cs" />
     <Compile Include="Models\DistributionSet\DistributionSamples.cs" />

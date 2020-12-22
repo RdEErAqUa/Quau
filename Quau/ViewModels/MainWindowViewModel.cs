@@ -53,6 +53,30 @@ namespace Quau.ViewModels
 
         #endregion
 
+        #region ProtocolTwoDimentional : String - протокол двомерной выборки
+
+        private String _ProtocolTwoDimentional;
+
+        public String ProtocolTwoDimentional { get => _ProtocolTwoDimentional; set => Set(ref _ProtocolTwoDimentional, value); }
+
+        #endregion
+
+        #region ProtocolTwoDimentional2X2 : String - протокол двомерной выборки
+
+        private String _ProtocolTwoDimentional2X2;
+
+        public String ProtocolTwoDimentional2X2 { get => _ProtocolTwoDimentional2X2; set => Set(ref _ProtocolTwoDimentional2X2, value); }
+
+        #endregion
+
+        #region ProtocolTwoDimentionalNXM : String - протокол двомерной выборки
+
+        private String _ProtocolTwoDimentionalNXM;
+
+        public String ProtocolTwoDimentionalNXM { get => _ProtocolTwoDimentionalNXM; set => Set(ref _ProtocolTwoDimentionalNXM, value); }
+
+        #endregion
+
         #region SampleFilePath : string - путь к файлу с значением выборки
 
         public string SampleFilePath
@@ -68,7 +92,6 @@ namespace Quau.ViewModels
                     temp.Add(el);
                 }
 
-                deb.Sort();
 
                 SampleData = new List<StatisticSample> { new StatisticSample { Sample = new ObservableCollection<double>(deb), fileName = value.Split('\\').Last() } };
 
@@ -85,7 +108,15 @@ namespace Quau.ViewModels
 
                     TwoDimentional.SeparateInTwoSample();
 
+                    TwoDimentional.SetClassSize(13, 13);
+
                     TwoDimentional.SetTwoDimentionalSample();
+
+                    TwoDimentional.SetHistogramSample();
+
+                    ProtocolTwoDimentional = TwoDimentional.buildProtocol();
+                    ProtocolTwoDimentional2X2 = TwoDimentional.build2X2Table();
+                    ProtocolTwoDimentionalNXM = TwoDimentional.buildNXMTable();
                 }
             }
         }
@@ -263,7 +294,7 @@ namespace Quau.ViewModels
         }
         #endregion
 
-        #region  CheckUniformy - Однородность выборки независимых
+        #region  CheckUniformy - Однородность выборки независимых, нормального распределения
         public ICommand CheckUniformy { get; }
 
         private bool CanCheckUniformyExecute(object p)
@@ -288,7 +319,7 @@ namespace Quau.ViewModels
         }
         #endregion
 
-        #region  CheckUniformyDependent - Однородность выборки зависимых
+        #region  CheckUniformyDependent - Однородность выборки зависимых, нормального распределения
         public ICommand CheckUniformyDependent { get; }
 
         private bool CanCheckUniformyDependentExecute(object p)
@@ -311,7 +342,7 @@ namespace Quau.ViewModels
         }
         #endregion
 
-        #region  CheckUniformyDependentElse - Однородность выборки зависимых
+        #region  CheckUniformyDependentElse - Однородность выборки зависимых, неизвестного распределния
         public ICommand CheckUniformyDependentElse { get; }
 
         private bool CanCheckUniformyDependentElseExecute(object p)
@@ -334,7 +365,7 @@ namespace Quau.ViewModels
         }
         #endregion
 
-        #region  CheckUniformyElse - Однородность выборки независимых
+        #region  CheckUniformyElse - Однородность выборки независимых, неизвестного распределения
         public ICommand CheckUniformyElse { get; }
 
         private bool CanCheckUniformyElseyExecute(object p)
@@ -359,7 +390,7 @@ namespace Quau.ViewModels
         }
         #endregion
 
-        #region  AbbeTest - Однородность выборки зависимых
+        #region  AbbeTest - Аббе - Тест
         public ICommand AbbeTestRun { get; }
 
         private bool CanAbbeTestRunExecute(object p)
@@ -378,7 +409,7 @@ namespace Quau.ViewModels
         }
         #endregion
 
-        #region  OpenOptionsWindow - Однородность выборки зависимых
+        #region  OpenOptionsWindow - Открыть протокол по оценкам
         public ICommand OpenOptionsWindow { get; }
 
         private bool CanOpenOptionsWindowExecute(object p)
@@ -395,7 +426,7 @@ namespace Quau.ViewModels
         }
         #endregion
 
-        #region  OpenOptionsWindow - Однородность выборки зависимых
+        #region  OpenOptionsWindow - Открыть протокол по интервалам
         public ICommand OpenDistributionWindow { get; }
 
         private bool CanOpenDistributionWindowExecute(object p)
@@ -411,6 +442,7 @@ namespace Quau.ViewModels
             displayRootRegistry.ShowPresentation(otherWindowViewModel);
         }
         #endregion
+
         #endregion
         public MainWindowViewModel()
         {
