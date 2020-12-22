@@ -77,6 +77,14 @@ namespace Quau.ViewModels
 
         #endregion
 
+        #region ProtocolRegretion : String - протокол двомерной выборки
+
+        private String _ProtocolRegretion;
+
+        public String ProtocolRegretion { get => _ProtocolRegretion; set => Set(ref _ProtocolRegretion, value); }
+
+        #endregion
+
         #region SampleFilePath : string - путь к файлу с значением выборки
 
         public string SampleFilePath
@@ -113,6 +121,7 @@ namespace Quau.ViewModels
                     TwoDimentional.SetTwoDimentionalSample();
 
                     TwoDimentional.SetHistogramSample();
+                    ProtocolRegretion = TwoDimentional.MakeRegression();
 
                     ProtocolTwoDimentional = TwoDimentional.buildProtocol();
                     ProtocolTwoDimentional2X2 = TwoDimentional.build2X2Table();

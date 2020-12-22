@@ -4,6 +4,7 @@ using LiveCharts.Wpf;
 using Quau.Models.Base;
 using Quau.Models.DimentionalModel.Two;
 using Quau.Models.XYModel;
+using Quau.Services.StatisticOperation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -88,6 +89,19 @@ namespace Quau.Models
         public ObservableCollection<TwoDimentionalSample> TwoDimensionalDensityFunction { get => _TwoDimensionalDensityFunction; set => Set(ref _TwoDimensionalDensityFunction, value); }
         #endregion
 
+        #region 
+        private ObservableCollection<XYData> _LinearRegresionMNK;
+
+        public ObservableCollection<XYData> LinearRegresionMNK { get => _LinearRegresionMNK; set => Set(ref _LinearRegresionMNK, value); }
+        #endregion
+
+        #region 
+        private ObservableCollection<XYData> _LinearRegresionTaylor;
+
+        public ObservableCollection<XYData> LinearRegresionTaylor { get => _LinearRegresionTaylor; set => Set(ref _LinearRegresionTaylor, value); }
+        #endregion
+
+
         #region (xStep, yStep) : (double, double) - шаг, с каким определяется количество классов для x и y
 
         private (double, double) _Step;
@@ -126,10 +140,32 @@ namespace Quau.Models
                 xSample.OrderBy(X => X);
                 ySample.OrderBy(X => X);
 
-                this.ValuePerX = SampleData;
                 this.xSample = new StatisticSample { Sample = xSample };
 
                 this.ySample = new StatisticSample { Sample = ySample };
+
+                double deltaX = (xSample.Last() - xSample.First()) / (this.xSample.ClassSize);
+
+                var SampleDataValue = new ObservableCollection<DataXModel> { };
+
+                for (int i = 0; i < this.xSample.ClassSize; i++)
+                {
+                    SampleDataValue.Add(new DataXModel { X = xSample.First() + (i + 1 - 0.5) * deltaX, Y = new List<double> { } });
+                }
+
+                for(int i = 0; i < SampleData.Count; i++)
+                {
+                    for(int j = 0; j < SampleDataValue.Count; j++)
+                    {
+                        if(SampleData[i].X >= SampleDataValue[j].X - 0.5 * deltaX && SampleData[i].X <= SampleDataValue[j].X + 0.5 * deltaX)
+                        {
+                            foreach (var el in SampleData[i].Y)
+                                SampleDataValue[j].Y.Add(el);
+                        }
+                    }
+                }
+
+                this.ValuePerX = SampleDataValue;
 
                 return true;
             }
@@ -757,6 +793,153 @@ namespace Quau.Models
                 Protocol += $"\nСтатистика Стюарда = {ts}";
             }
 
+
+            return Protocol;
+        }
+        //LinearRegresion
+        public String MakeRegression()
+        {
+            String Protocol = "";
+
+            double N = ValuePerX.Sum(X => X.Y.Count);
+
+            List<double> SYXi = new List<double> { };
+
+            double C = 1.0 + (1.0) / (3.0 * (ValuePerX.Count - 1.0)) * ValuePerX.Sum(X => 1.0 / X.Y.Count) - (1.0) / (N);
+
+            for(int i = 0; i < ValuePerX.Count; i++)
+            {
+                double SValue = 0;
+
+                for(int j = 0; j < ValuePerX[i].Y.Count; j++)
+                {
+                    SValue += Math.Pow(ValuePerX[i].Y[j] - ValuePerX[i].Y.Average(), 2.0);
+                }
+                SValue *= (1.0 / (ValuePerX[i].Y.Count - 1.0));
+                if (ValuePerX[i].Y.Count - 1.0 > 0)
+                    SYXi.Add(SValue);
+                else
+                    SYXi.Add(0);
+            }
+            double S = 0;
+
+            for(int i = 0; i < ValuePerX.Count; i++)
+            {
+                S += (ValuePerX[i].Y.Count - 1.0) * SYXi[i];
+            }
+            S *= 1.0 / (N - ValuePerX.Count);
+
+            double LambdaValue = 0;
+            for (int i = 0; i < ValuePerX.Count; i++)
+                LambdaValue += (ValuePerX[i].Y.Count * Math.Log(SYXi[i] / S));
+            LambdaValue *= (-1.0 / C);
+
+            Quantiles quantiles = new Quantiles();
+
+            quantiles.XI2Quantiles();
+
+            int v1 = ValuePerX.Count - 1;
+
+            v1 = v1 > 80 ? 80 : v1;
+
+            var Xi2Quantilies = quantiles.XI2_a0_2[v1];
+
+            //
+            double LambdaValue2 = 0;
+
+            if(Xi2Quantilies > LambdaValue)
+            {
+                List<double> SYXi2 = new List<double> { };
+                //Неизвестно как найти h.
+
+                S = 0;
+
+                for (int i = 0; i < ValuePerX.Count; i++)
+                {
+                    S += (ValuePerX[i].Y.Count - 1.0) * SYXi[i];
+                }
+                S *= 1.0 / (N - ValuePerX.Count);
+            }
+            Protocol += "\nПеревірка умов регресійного аналізу" +
+                "\nВисувається гіпотезаH0:D{y/x1} = ... = D{y/xk}\n" +  $"/\\ - коефіцієнт є {LambdaValue}, а v = {v1}" + (Xi2Quantilies < LambdaValue ? ($"{Xi2Quantilies} < {LambdaValue} - головна гіпотеза відхилена, отже висувається гіпотеза відносно\n " 
+                + "\nВисувається гіпотезаH0:D{y/x1}/h^2(x1) = ... = D{y/xk}/h^2(xk)\n" + ((true) ? "" : "")) 
+                : $"\n{Xi2Quantilies} > {LambdaValue} - головну гіпотезу підтверджено. Отже реалізується параметричний регрісійний аналіз");
+
+            if (Xi2Quantilies > LambdaValue)
+            {
+                double R = CorrelationCountRating();
+
+                double R2 = Math.Pow(R, 2.0) * 100;
+
+                Protocol += $"\nКоефіцієнт детермінації = {R2}";
+
+                Protocol = buildLinearRegresionMNK(Protocol);
+
+                Protocol = buildLinearRegresionTaylor(Protocol);
+            }
+
+            return Protocol;
+
+        }
+        public String buildLinearRegresionMNK(String Protocol)
+        {
+            double R = CorrelationCountRating();
+
+            double b = R * ySample.QuantitiveCharactacteristics.S_Variance_unShifted / xSample.QuantitiveCharactacteristics.S_Variance_unShifted;
+            double a = ySample.QuantitiveCharactacteristics.AritmeitcMean - b * ySample.QuantitiveCharactacteristics.AritmeitcMean;
+            LinearRegresionMNK = new ObservableCollection<XYData> { };
+            for(double i = xSample.Sample.Min(); i <= xSample.Sample.Max(); i += xSample.StepSize)
+            {
+                LinearRegresionMNK.Add(new XYData { X = i, Y = a + b * i});
+            }
+
+            double SCommon2 = 0;
+
+            for(int i = 0; i < TwoDimensionalSample.Count; i++)
+            {
+                SCommon2 += Math.Pow(TwoDimensionalSample[i].Item2 - (a + b * TwoDimensionalSample[i].Item1), 2.0);
+            }
+
+            Protocol += $"\nОцінка МНК - на графіку чорна лінія. S^2 загальне - {SCommon2}";
+
+            return Protocol;
+        }
+
+        public String buildLinearRegresionTaylor(String Protocol)
+        {
+            double R = CorrelationCountRating();
+
+            List<double> MEDB = new List<double> { };
+            List<double> MEDA = new List<double> { };
+
+            for(int i = 0; i < TwoDimensionalSample.Count; i++)
+            {
+                for(int j = i; j < TwoDimensionalSample.Count; j++)
+                {
+                    MEDB.Add((TwoDimensionalSample[j].Item2 - TwoDimensionalSample[i].Item2) / (TwoDimensionalSample[j].Item1 - TwoDimensionalSample[i].Item1));
+                }
+            }
+
+            double b = QuantitiveCharacteristicsService.MEDFind(MEDB);
+            for(int i = 0; i < TwoDimensionalSample.Count; i++)
+            {
+                MEDA.Add(TwoDimensionalSample[i].Item2 - b * TwoDimensionalSample[i].Item1);
+            }
+            double a = QuantitiveCharacteristicsService.MEDFind(MEDA);
+            LinearRegresionTaylor = new ObservableCollection<XYData> { };
+            for (double i = xSample.Sample.Min(); i <= xSample.Sample.Max(); i += xSample.StepSize)
+            {
+                LinearRegresionTaylor.Add(new XYData { X = i, Y = a + b * i });
+            }
+
+            double SCommon2 = 0;
+
+            for (int i = 0; i < TwoDimensionalSample.Count; i++)
+            {
+                SCommon2 += Math.Pow(TwoDimensionalSample[i].Item2 - (a + b * TwoDimensionalSample[i].Item1), 2.0);
+            }
+
+            Protocol += $"\nОцінка Тейлора - на графіку сіра лінія. S^2 загальне - {SCommon2}";
 
             return Protocol;
         }

@@ -69,6 +69,14 @@
                               ItemsSource="{Binding TwoDimentional.TwoDimensionalSample2}"
                                                 DataFieldX="X"
                                                 DataFieldY="Y"/>
+                                    <oxy:LineSeries Color="Black"
+                              ItemsSource="{Binding TwoDimentional.LinearRegresionMNK}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
+                                    <oxy:LineSeries Color="Gray"
+                              ItemsSource="{Binding TwoDimentional.LinearRegresionTaylor}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
                                 </oxy:Plot>
                             </TabItem>
                             <TabItem Header="Гістограма">
@@ -121,6 +129,9 @@
                             </TabItem>
                             <TabItem Header="Протокол таблиця сполучень N*M класів">
                                 <TextBox IsReadOnly="True" Text="{Binding ProtocolTwoDimentionalNXM}"/>
+                            </TabItem>
+                            <TabItem Header="Регресійний аналіз">
+                                <TextBox IsReadOnly="True" Text="{Binding ProtocolRegretion}"/>
                             </TabItem>
                         </TabControl>
                     </TabItem>
