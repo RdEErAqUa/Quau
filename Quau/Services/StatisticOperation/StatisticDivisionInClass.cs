@@ -78,7 +78,6 @@ namespace Quau.Services.StatisticOperation
             {
                 xDivision.Add((i) * stepSize + valueSample.SampleDataRanking.First().SampleData);
             }
-            xDivision[xDivision.Count - 1] += Math.Abs(valueSample.Sample.Min()) >= 1 ? 1 / valueSample.Sample.Min() : valueSample.Sample.Min() * valueSample.Sample.Min();
             return xDivision;
         }
 
@@ -92,13 +91,10 @@ namespace Quau.Services.StatisticOperation
                 int count = 0;
                 foreach (var el in valueSample.SampleDataRanking)
                 {
-                    if (i + 1 >= xDivision.Count)
+                    if (i == xDivision.Count - 1) ;
+                    else if (i == xDivision.Count - 2 && xDivision[i] <= el.SampleData && xDivision[i + 1] >= el.SampleData)
                     {
-                        if(xDivision[i] == valueSample.SampleDataRanking.Last().SampleData)
-                        {
-                            count += valueSample.SampleDataRanking.Last().SampleDataFrequency;
-                            break;
-                        }
+                        count += el.SampleDataFrequency;
                     }
                     else if (xDivision[i] <= el.SampleData && xDivision[i + 1] > el.SampleData)
                     {

@@ -57,6 +57,13 @@ namespace Quau.Data.UniformySamples
                 String uniformyMiddleRankingValue = uniformyMiddleRanking < UA ? $"\nКритерій Різниці стандартних рангів - {uniformyMiddleRanking} < {UA} - вибірки однорідні" :
                     $"\nКритерій Різниці стандартних рангів - {uniformyMiddleRanking} > {UA} - вибірки неоднорідні";
                 RecordValue += uniformyMiddleRankingValue;
+
+                //КРитерій Колмогорова Смірнова
+                double KolmogorovSmirnov = UniformySamples.uniformyKolmogorovaSmirnova(valuesSample);
+
+                String KolmogorovSmirnovValue = KolmogorovSmirnov < A ? $"\nКритерій Колмогорова-Смірнова {KolmogorovSmirnov} < {A} - вибірки однорідні"
+                    : $"\nКритерій Колмогорова-Смірнова {KolmogorovSmirnov} > {A} - вибірки неоднорідні";
+                RecordValue += KolmogorovSmirnovValue;
             }
             else if (sizeOfValue > 2)
             {
@@ -118,6 +125,36 @@ namespace Quau.Data.UniformySamples
                 String uniformyMiddleRankingValue = uniformyMiddleRanking < UA ? $"\nКритерій Різниці стандартних рангів - {uniformyMiddleRanking} < {UA} - вибірки однорідні" :
                     $"\nКритерій Різниці стандартних рангів - {uniformyMiddleRanking} > {UA} - вибірки неоднорідні";
                 RecordValue += uniformyMiddleRankingValue;
+                //Критерій знаків
+                int NValue = valuesSample.ElementAt(0).Sample.Count + valuesSample.ElementAt(0).Sample.Count;
+
+                double GTestAnswer = NValue < 15 ? Math.Abs(UniformySamples.uniformyGTest15Element(valuesSample)) : Math.Abs(UniformySamples.uniformyGTestMore15Element(valuesSample));
+                String uniformyHValue = null;
+                if (NValue < 15)
+                    uniformyHValue = GTestAnswer < A ? $"\nКритерій знаків - {GTestAnswer} < {A} - вибірки однорідні" :
+                        $"\nКритерій знаків - {GTestAnswer} > {A} - вибірки неоднорідні";
+                else
+                    uniformyHValue = GTestAnswer < UA ? $"\nКритерій знаків - {GTestAnswer} < {UA} - вибірки однорідні" :
+                        $"\nКритерій знаків - {GTestAnswer} > {UA} - вибірки неоднорідні";
+                RecordValue += uniformyHValue;
+
+                //КРитерій Колмогорова Смірнова
+                double KolmogorovSmirnov = UniformySamples.uniformyKolmogorovaSmirnova(valuesSample);
+
+                String KolmogorovSmirnovValue = KolmogorovSmirnov < A ? $"\nКритерій Колмогорова-Смірнова {KolmogorovSmirnov} < {A} - вибірки однорідні"
+                    : $"\nКритерій Колмогорова-Смірнова {KolmogorovSmirnov} > {A} - вибірки неоднорідні";
+                RecordValue += KolmogorovSmirnovValue;
+
+                //Q - критерій
+                quantiles.XI2Quantiles();
+                double XI2 = A == 0.5 ? quantiles.XI2_a0_5[1] : quantiles.XI2_a0_2[1];
+
+                double QTest = UniformySamples.uniformyQTest(valuesSample);
+
+                String QTestValue = XI2 > QTest ? $"\nКритерій Кохрена(Q тест) - {QTest} < { XI2}  -виборки однорідні"
+                    : $"\nКритерій Кохрена(Q тест) - {QTest} > {XI2}  -виборки неоднорідні";
+
+                RecordValue += QTestValue;
             }
             else if (sizeOfValue > 2)
             {
@@ -140,8 +177,16 @@ namespace Quau.Data.UniformySamples
                 double uniformyHTest = UniformySamples.uniformyHTest(valuesSample);
 
                 String uuniformyHTestValue = uniformyHTest < XI2 ? $"\nКритерій Вілксона(H тест) - {uniformyHTest} < {XI2} - виборки однорідні"
-                    : $"\nКритерій Вілксона(H тест) - {uniformyHTest} > {XI2} - виборки неоднорідні";
+                    : $"\nКритерій Вілкоксона(H тест) - {uniformyHTest} > {XI2} - виборки неоднорідні";
                 RecordValue += uuniformyHTestValue;
+
+                //Q - критерій
+                double QTest = UniformySamples.uniformyQTest(valuesSample);
+
+                String QTestValue = XI2 > QTest ? $"\nКритерій Кохрена(Q тест) - {QTest} < { XI2}  -виборки однорідні"
+                    : $"\nКритерій Кохрена(Q тест) - {QTest} > {XI2}  -виборки неоднорідні";
+
+                RecordValue += QTestValue;
             }
             return RecordValue;
         }

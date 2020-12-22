@@ -58,8 +58,40 @@
                         <v:GraphFunctionWindow DataContext="{Binding GraphFunctionWindowModel}"/>
                     </TabItem>
                     <TabItem Header="Двовимірна">
-                        <lvc:CartesianChart Grid.Row="1" Series="{Binding TwoDimentional.Values}">
-                        </lvc:CartesianChart>
+                        <TabControl>
+                            <TabItem Header="Побудована функція">
+                                <oxy:Plot Grid.Row="0" Grid.Column="0" >
+                                    <oxy:Plot.Axes>
+                                        <oxy:LinearAxis Position="Left"/>
+                                        <oxy:LinearAxis Position="Bottom"/>
+                                    </oxy:Plot.Axes>
+                                    <oxy:ScatterErrorSeries Color="Black"
+                              ItemsSource="{Binding TwoDimentional.TwoDimensionalSample2}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
+                                </oxy:Plot>
+                            </TabItem>
+                            <TabItem Header="Гістограма">
+                                <lvc:CartesianChart Grid.Row="1" Series="{Binding TwoDimentional.Values}">
+                                    <lvc:CartesianChart.AxisX>
+                                        <lvc:Axis LabelsRotation="20" Labels="{Binding TwoDimentional.LabelPointsX}"/>
+                                    </lvc:CartesianChart.AxisX>
+                                    <lvc:CartesianChart.AxisY>
+                                        <lvc:Axis Labels="{Binding TwoDimentional.LabelPointsY}" Position="LeftBottom"></lvc:Axis>
+                                    </lvc:CartesianChart.AxisY>
+                                </lvc:CartesianChart>
+                            </TabItem>
+                            <TabItem Header="Функція щільності">
+                                <lvc:CartesianChart Grid.Row="1" Series="{Binding TwoDimentional.HistogramValues}">
+                                    <lvc:CartesianChart.AxisX>
+                                        <lvc:Axis LabelsRotation="20" Labels="{Binding TwoDimentional.LabelPointsX}"/>
+                                    </lvc:CartesianChart.AxisX>
+                                    <lvc:CartesianChart.AxisY>
+                                        <lvc:Axis Labels="{Binding TwoDimentional.LabelPointsY}" Position="LeftBottom"></lvc:Axis>
+                                    </lvc:CartesianChart.AxisY>
+                                </lvc:CartesianChart>
+                            </TabItem>
+                        </TabControl>
                     </TabItem>
                 </TabControl>
             </Grid>
@@ -75,7 +107,24 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-                <v:DataWindow DataContext="{Binding DataWindowModel}" Grid.Column="1"/>
+                <TabControl Grid.Column="1">
+                    <TabItem Header="Одновимірна вибірка">
+                        <v:DataWindow DataContext="{Binding DataWindowModel}" Grid.Column="1"/>
+                    </TabItem>
+                    <TabItem Header="Двовимірна вибірка">
+                        <TabControl>
+                            <TabItem Header="Протокол">
+                                <TextBox IsReadOnly="True" Text="{Binding ProtocolTwoDimentional}"/>
+                            </TabItem>
+                            <TabItem Header="Протокол таблиця сполучень 2*2">
+                                <TextBox IsReadOnly="True" Text="{Binding ProtocolTwoDimentional2X2}"/>
+                            </TabItem>
+                            <TabItem Header="Протокол таблиця сполучень N*M класів">
+                                <TextBox IsReadOnly="True" Text="{Binding ProtocolTwoDimentionalNXM}"/>
+                            </TabItem>
+                        </TabControl>
+                    </TabItem>
+                </TabControl>
             </Grid>
             <GridSplitter Grid.Row="1" ShowsPreview="False" Height="3"
         VerticalAlignment="Center" HorizontalAlignment="Stretch"  />
