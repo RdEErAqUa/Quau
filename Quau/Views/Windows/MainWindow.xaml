@@ -41,6 +41,7 @@
                 <MenuItem Header="Оцінки" Command="{Binding OpenOptionsWindow}"/>
                 <MenuItem Header="Довірчий інтервал та критерій згоди" Command="{Binding OpenDistributionWindow}"/>
             </MenuItem>
+            <MenuItem Header="Перерахувати двовимірну вибірку" Command="{Binding StartTwoDimensionalCount}"/>
         </Menu>
 
         <StatusBar DockPanel.Dock="Bottom">
@@ -69,12 +70,84 @@
                               ItemsSource="{Binding TwoDimentional.TwoDimensionalSample2}"
                                                 DataFieldX="X"
                                                 DataFieldY="Y"/>
+                                </oxy:Plot>
+                            </TabItem>
+                            <TabItem Header="Регресійний аналіз МНК">
+                                <oxy:Plot Grid.Row="0" Grid.Column="0" >
+                                    <oxy:Plot.Axes>
+                                        <oxy:LinearAxis Position="Left"/>
+                                        <oxy:LinearAxis Position="Bottom"/>
+                                    </oxy:Plot.Axes>
+                                    <oxy:ScatterErrorSeries Color="Black"
+                              ItemsSource="{Binding TwoDimentional.TwoDimensionalSample2}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
+                                    <oxy:LineSeries Color="Black"
+                              ItemsSource="{Binding TwoDimentional.LinearRegresionMNKMax}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
                                     <oxy:LineSeries Color="Black"
                               ItemsSource="{Binding TwoDimentional.LinearRegresionMNK}"
                                                 DataFieldX="X"
                                                 DataFieldY="Y"/>
+                                    <oxy:LineSeries Color="Black"
+                              ItemsSource="{Binding TwoDimentional.LinearRegresionMNKMin}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
+                                    <oxy:LineSeries Color="Green"
+                              ItemsSource="{Binding TwoDimentional.LinearRegresionMNKMaxInterval}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
+                                    <oxy:LineSeries Color="Green"
+                              ItemsSource="{Binding TwoDimentional.LinearRegresionMNKMinInterval}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
+                                    <oxy:LineSeries Color="DarkBlue"
+                              ItemsSource="{Binding TwoDimentional.LinearRegresionMNKMaxIntervalNew}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
+                                    <oxy:LineSeries Color="DarkBlue"
+                              ItemsSource="{Binding TwoDimentional.LinearRegresionMNKMinIntervalNew}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
+                                </oxy:Plot>
+                            </TabItem>
+                            <TabItem Header="Регресійний аналіз Тейлора">
+                                <oxy:Plot Grid.Row="0" Grid.Column="0" >
+                                    <oxy:Plot.Axes>
+                                        <oxy:LinearAxis Position="Left"/>
+                                        <oxy:LinearAxis Position="Bottom"/>
+                                    </oxy:Plot.Axes>
+                                    <oxy:ScatterErrorSeries Color="Black"
+                              ItemsSource="{Binding TwoDimentional.TwoDimensionalSample2}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
+                                    <oxy:LineSeries Color="Gray"
+                              ItemsSource="{Binding TwoDimentional.LinearRegresionTaylorMax}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
                                     <oxy:LineSeries Color="Gray"
                               ItemsSource="{Binding TwoDimentional.LinearRegresionTaylor}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
+                                    <oxy:LineSeries Color="Gray"
+                              ItemsSource="{Binding TwoDimentional.LinearRegresionTaylorMin}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
+                                    <oxy:LineSeries Color="Green"
+                              ItemsSource="{Binding TwoDimentional.LinearRegresionTaylorMaxInterval}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
+                                    <oxy:LineSeries Color="Green"
+                              ItemsSource="{Binding TwoDimentional.LinearRegresionTaylorMinInterval}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
+                                    <oxy:LineSeries Color="DarkBlue"
+                              ItemsSource="{Binding TwoDimentional.LinearRegresionTaylorMaxIntervalNew}"
+                                                DataFieldX="X"
+                                                DataFieldY="Y"/>
+                                    <oxy:LineSeries Color="DarkBlue"
+                              ItemsSource="{Binding TwoDimentional.LinearRegresionTaylorMinIntervalNew}"
                                                 DataFieldX="X"
                                                 DataFieldY="Y"/>
                                 </oxy:Plot>

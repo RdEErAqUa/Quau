@@ -103,31 +103,45 @@ namespace Quau.ViewModels
 
                 SampleData = new List<StatisticSample> { new StatisticSample { Sample = new ObservableCollection<double>(deb), fileName = value.Split('\\').Last() } };
 
-                if(temp.Count % 2 == 0)
+                if (temp.Count % 2 == 0)
                 {
                     ObservableCollection<(double, double)> sample = new ObservableCollection<(double, double)> { };
 
-                    for(int i = 0; i < temp.Count - 1; i += 2)
+                    for (int i = 0; i < temp.Count - 1; i += 2)
                     {
                         sample.Add((temp[i], temp[i + 1]));
                     }
 
-                    TwoDimentional = new TwoDimentionalStatisticSample { TwoDimensionalSample = sample};
+                    TwoDimentional = new TwoDimentionalStatisticSample { TwoDimensionalSample = sample };
 
                     TwoDimentional.SeparateInTwoSample();
 
-                    TwoDimentional.SetClassSize(13, 13);
-
-                    TwoDimentional.SetTwoDimentionalSample();
-
-                    TwoDimentional.SetHistogramSample();
-                    ProtocolRegretion = TwoDimentional.MakeRegression();
-
-                    ProtocolTwoDimentional = TwoDimentional.buildProtocol();
-                    ProtocolTwoDimentional2X2 = TwoDimentional.build2X2Table();
-                    ProtocolTwoDimentionalNXM = TwoDimentional.buildNXMTable();
+                    SampleData = new List<StatisticSample> { TwoDimentional.xSample };
+                    SampleData = new List<StatisticSample> { TwoDimentional.ySample };
                 }
             }
+        }
+        #endregion
+
+        #region StartTwoDimensionalCount
+
+        public ICommand StartTwoDimensionalCount { get; }
+
+        private bool CanStartTwoDimensionalCountExecute(object p)
+        {
+            return true;
+        }
+
+        private void OnStartTwoDimensionalCountExecuted(object p)
+        {
+            TwoDimentional.SetTwoDimentionalSample();
+
+            TwoDimentional.SetHistogramSample();
+            ProtocolRegretion = TwoDimentional.MakeRegression();
+
+            ProtocolTwoDimentional = TwoDimentional.buildProtocol();
+            ProtocolTwoDimentional2X2 = TwoDimentional.build2X2Table();
+            ProtocolTwoDimentionalNXM = TwoDimentional.buildNXMTable();
         }
 
         #endregion
@@ -461,6 +475,8 @@ namespace Quau.ViewModels
             GraphFunctionWindowModel = new GraphFunctionWindowViewModel(this);
 
             DataWindowModel = new DataWindowViewModel(this);
+
+            StartTwoDimensionalCount = new LambdaCommand(OnStartTwoDimensionalCountExecuted, CanStartTwoDimensionalCountExecute);
 
             CheckUniformyDependentElse = new LambdaCommand(OnCheckUniformyDependentElseExecuted, CanCheckUniformyDependentElseExecute);
 

@@ -88,7 +88,7 @@ namespace Quau.Models
 
         public ObservableCollection<TwoDimentionalSample> TwoDimensionalDensityFunction { get => _TwoDimensionalDensityFunction; set => Set(ref _TwoDimensionalDensityFunction, value); }
         #endregion
-
+        //МНК
         #region 
         private ObservableCollection<XYData> _LinearRegresionMNK;
 
@@ -96,10 +96,87 @@ namespace Quau.Models
         #endregion
 
         #region 
+        private ObservableCollection<XYData> _LinearRegresionMNKMax;
+
+        public ObservableCollection<XYData> LinearRegresionMNKMax { get => _LinearRegresionMNKMax; set => Set(ref _LinearRegresionMNKMax, value); }
+        #endregion
+
+        #region 
+        private ObservableCollection<XYData> _LinearRegresionMNKMin;
+
+        public ObservableCollection<XYData> LinearRegresionMNKMin { get => _LinearRegresionMNKMin; set => Set(ref _LinearRegresionMNKMin, value); }
+        #endregion
+        //довірчий інтервал
+
+        #region 
+        private ObservableCollection<XYData> _LinearRegresionMNKMaxInterval;
+
+        public ObservableCollection<XYData> LinearRegresionMNKMaxInterval { get => _LinearRegresionMNKMaxInterval; set => Set(ref _LinearRegresionMNKMaxInterval, value); }
+        #endregion
+
+        #region 
+        private ObservableCollection<XYData> _LinearRegresionMNKMinInterval;
+
+        public ObservableCollection<XYData> LinearRegresionMNKMinInterval { get => _LinearRegresionMNKMinInterval; set => Set(ref _LinearRegresionMNKMinInterval, value); }
+        #endregion
+        //довірчий інтервал для нового спостереження
+        #region 
+        private ObservableCollection<XYData> _LinearRegresionMNKMaxIntervalNew;
+
+        public ObservableCollection<XYData> LinearRegresionMNKMaxIntervalNew { get => _LinearRegresionMNKMaxIntervalNew; set => Set(ref _LinearRegresionMNKMaxIntervalNew, value); }
+        #endregion
+
+        #region 
+        private ObservableCollection<XYData> _LinearRegresionMNKMinIntervalNew;
+
+        public ObservableCollection<XYData> LinearRegresionMNKMinIntervalNew { get => _LinearRegresionMNKMinIntervalNew; set => Set(ref _LinearRegresionMNKMinIntervalNew, value); }
+        #endregion
+
+        //Тейлора
+        #region 
         private ObservableCollection<XYData> _LinearRegresionTaylor;
 
         public ObservableCollection<XYData> LinearRegresionTaylor { get => _LinearRegresionTaylor; set => Set(ref _LinearRegresionTaylor, value); }
         #endregion
+
+        #region 
+        private ObservableCollection<XYData> _LinearRegresionTaylorMax;
+
+        public ObservableCollection<XYData> LinearRegresionTaylorMax { get => _LinearRegresionTaylorMax; set => Set(ref _LinearRegresionTaylorMax, value); }
+        #endregion
+
+        #region 
+        private ObservableCollection<XYData> _LinearRegresionTaylorMin;
+
+        public ObservableCollection<XYData> LinearRegresionTaylorMin { get => _LinearRegresionTaylorMin; set => Set(ref _LinearRegresionTaylorMin, value); }
+        #endregion
+
+        //довірчий інтервал
+        #region 
+        private ObservableCollection<XYData> _LinearRegresionTaylorMaxInterval;
+
+        public ObservableCollection<XYData> LinearRegresionTaylorMaxInterval { get => _LinearRegresionTaylorMaxInterval; set => Set(ref _LinearRegresionTaylorMaxInterval, value); }
+        #endregion
+
+        #region 
+        private ObservableCollection<XYData> _LinearRegresionTaylorMinInterval;
+
+        public ObservableCollection<XYData> LinearRegresionTaylorMinInterval { get => _LinearRegresionTaylorMinInterval; set => Set(ref _LinearRegresionTaylorMinInterval, value); }
+        #endregion
+        //довірчий інтервал для нового спостереження
+        #region 
+        private ObservableCollection<XYData> _LinearRegresionTaylorMaxIntervalNew;
+
+        public ObservableCollection<XYData> LinearRegresionTaylorMaxIntervalNew { get => _LinearRegresionTaylorMaxIntervalNew; set => Set(ref _LinearRegresionTaylorMaxIntervalNew, value); }
+        #endregion
+
+        #region 
+        private ObservableCollection<XYData> _LinearRegresionTaylorMinIntervalNew;
+
+        public ObservableCollection<XYData> LinearRegresionTaylorMinIntervalNew { get => _LinearRegresionTaylorMinIntervalNew; set => Set(ref _LinearRegresionTaylorMinIntervalNew, value); }
+        #endregion
+
+        //
 
 
         #region (xStep, yStep) : (double, double) - шаг, с каким определяется количество классов для x и y
@@ -140,9 +217,9 @@ namespace Quau.Models
                 xSample.OrderBy(X => X);
                 ySample.OrderBy(X => X);
 
-                this.xSample = new StatisticSample { Sample = xSample };
+                this.xSample = new StatisticSample { Sample = xSample, fileName="x - sample" };
 
-                this.ySample = new StatisticSample { Sample = ySample };
+                this.ySample = new StatisticSample { Sample = ySample, fileName = "y - sample" };
 
                 double deltaX = (xSample.Last() - xSample.First()) / (this.xSample.ClassSize);
 
@@ -470,9 +547,10 @@ namespace Quau.Models
 
             return Math.Sqrt(f1 / f2);
         }
+        private int roundValue = 4;
         public String buildProtocol(bool buildRankingCorrelation = true)
         {
-            var Xi2 = Xi2Find();
+            var Xi2 = Math.Round(Xi2Find(), roundValue);
 
             Quantiles quantiles = new Quantiles();
 
@@ -492,9 +570,11 @@ namespace Quau.Models
             double rMin = r + (r * (1 - Math.Pow(r, 2.0))) / (2 * TwoDimensionalSample.Count) - u0_05 * (1 - Math.Pow(r, 2.0)) / Math.Sqrt(TwoDimensionalSample.Count - 1);
             double rMax = r + (r * (1 - Math.Pow(r, 2.0))) / (2 * TwoDimensionalSample.Count) + u0_05 * (1 - Math.Pow(r, 2.0)) / Math.Sqrt(TwoDimensionalSample.Count - 1);
 
+            rMin = Math.Round(rMin, roundValue);
+            rMax = Math.Round(rMax, roundValue);
             //
             double tCorrelationSignificant = Math.Abs(r * Math.Sqrt(TwoDimensionalSample.Count - 2) / (Math.Sqrt(1.0 - Math.Pow(r, 2.0))));
-
+            tCorrelationSignificant = Math.Round(tCorrelationSignificant, roundValue);
             quantiles.TQuantiles();
 
             int v2 = TwoDimensionalSample.Count - 1 <= 10 ? 10 : (TwoDimensionalSample.Count - 1 <= 30 ? 30 : 120);
@@ -506,15 +586,16 @@ namespace Quau.Models
             String Protocol = $"При a = 0.2. Та Xi2 = {Xi2}, квантиль Xi2 = {Xi2Quantilies}. \n" +
                 "Отже вибірка " + data + $"\nВектор середніх значень {{{Math.Round(AritheticMeanX(), 4)}; {Math.Round(AritheticMeanY(), 4)}}}\n" +
                 $"кореляційний аналіз: r, та оцінка параметра r\n" +
-                $"{CorrelationCount()} - r, {CorrelationCountRating()} - оцінка параметра r\n" +
+                $"{Math.Round(CorrelationCount(), roundValue)} - r, {Math.Round(CorrelationCountRating(), roundValue)} - оцінка параметра r\n" +
                 $"Довірчий інтервал для r = {{{rMin}; {rMax}}}\n" +
                 $"Значущість r, при a = 0.05 є t = {tCorrelationSignificant}, так як квантиль t, при v = {v2} є {TQuantile}: " + (TQuantile > tCorrelationSignificant ? $"{tCorrelationSignificant} < {TQuantile}, отже r - незначуща"
                 : $"{tCorrelationSignificant} > {TQuantile}, отже r - значуща");
             //Кореляційне відношення
             if (TQuantile > tCorrelationSignificant)
             {
-                double correlationRelation = CorelationRelation();
+                double correlationRelation = Math.Round(CorelationRelation(), roundValue);
                 double tCorrelationRelationSignificant = correlationRelation == 1 ? 0 : correlationRelation * Math.Sqrt(TwoDimensionalSample.Count - 2) / (Math.Sqrt(1.0 - Math.Pow(correlationRelation, 2.0)));
+                tCorrelationRelationSignificant = Math.Round(tCorrelationRelationSignificant, roundValue);
                 Protocol += $"\nКореляційне відношення : {correlationRelation}, так як квантиль t, при v = {v2} є {TQuantile}: " + (TQuantile > tCorrelationRelationSignificant ? $"{tCorrelationRelationSignificant} < {TQuantile}, отже між   n, E - не існує стохастичного зв'язку"
                 : $"{tCorrelationRelationSignificant} > {TQuantile}, отже між   n, E - існує стохастичного зв'язку ");
             }
@@ -554,12 +635,13 @@ namespace Quau.Models
             tC = 1.0 - 6.0 / (TwoDimensionalSample.Count * (Math.Pow(TwoDimensionalSample.Count, 2.0) - 1.0)) * tC;
 
             double ttCSignificant = Math.Abs(tC) == 1 ? 0 : tC * Math.Sqrt(TwoDimensionalSample.Count - 2) / (Math.Sqrt(1.0 - Math.Pow(tC, 2.0)));
-
+            ttCSignificant = Math.Round(ttCSignificant, roundValue);
+            tC = Math.Round(tC, roundValue);
             Protocol += $"\nРанговий коефіцієнт кореляції Спірмена : {tC}, так як квантиль t, при v = {v2} є {TQuantile}: " + (TQuantile > ttCSignificant ? $"{ttCSignificant} < {TQuantile}, отже коефіцієнт незначущій"
                 : $"{ttCSignificant} > {TQuantile}, отже коефіцієнт значуща ");
 
             double tCInterval = Math.Sqrt((1.0 - Math.Pow(tC, 2.0)) / (TwoDimensionalSample.Count - 2));
-
+            tCInterval = Math.Round(tCInterval, roundValue);
             Protocol += $"\nІнтервальне оцінювання рангового коефіцієнта кореляції Спірмена - {{{tC - TQuantile * tCInterval}, {tC + TQuantile * tCInterval}}} ";
 
             double S = 0;
@@ -578,7 +660,9 @@ namespace Quau.Models
             double ttKSignificant = 3.0 * tK * Math.Sqrt(N * (N - 1.0)) / (Math.Sqrt(2 * (2.0 * N + 5.0)));
 
             double tKInterval = Math.Sqrt((4.0 * N + 10.0) / (9.0 * (N * N - N)));
-
+            tK = Math.Round(tK, roundValue);
+            ttKSignificant = Math.Round(ttKSignificant, roundValue);
+            tKInterval = Math.Round(tKInterval, roundValue);
             Protocol += $"\nРанговий коефіцієнт кореляції Кенделла : {tK}, так як квантиль t, при v = {v2} є {TQuantile}: " + (TQuantile > ttKSignificant ? $"{ttKSignificant} < {TQuantile}, отже коефіцієнт незначущій"
                 : $"{ttKSignificant} > {TQuantile}, отже коефіцієнт значуща ") +
                 $"\nОтже інтервал оцінки кореляції Кенделла {{{tK - 1.9 * tKInterval} , {tK + 1.9 * tKInterval}}}";
@@ -619,7 +703,7 @@ namespace Quau.Models
                 $"\n                          {M0}            |             {M1}               |            {N}";
 
             double I = (N00 + N11 - N10 - N01) / (N00 + N11 + N10 + N01);
-
+            I = Math.Round(I, roundValue);
             Protocol += $"\nІндекс Фехнера має значення {I}, якщо I > 0 - додатня кореляція, при < 0 - від'ємна, при = 0 - відсутність зв'язку";
 
             var quantiles = new Quantiles();
@@ -644,7 +728,8 @@ namespace Quau.Models
             double Xi2 = 0;
             if (TwoDimensionalSample.Count >= 40) Xi2 = TwoDimensionalSample.Count * Math.Pow(F, 2.0);
             else Xi2 = TwoDimensionalSample.Count * Math.Pow(N00 * N11 - N01 * N10 - 0.5, 2.0) / (N0 * N1 * M0 * M1);
-
+            F = Math.Round(F, roundValue);
+            Xi2 = Math.Round(Xi2, roundValue);
             Protocol += $"\nКоефіцієнт сполучень Ф = {F}, при v = 1, та a = 0.2. " + (Xi2 >= Xi2Quantilies ? $"{Xi2} >= {Xi2Quantilies}, отже оцінка є значущую" :
                 $"{Xi2} < {Xi2Quantilies}, отже оцінка не є значущою");
             //Коефіцієнт сполучень Юла
@@ -657,6 +742,12 @@ namespace Quau.Models
 
             double uQ = Math.Abs(Q / SQ);
             double uY = Math.Abs(Y / SY);
+
+            Q = Math.Round(Q, roundValue);
+            Y = Math.Round(Y, roundValue);
+
+            uQ = Math.Round(uQ, roundValue);
+            uY = Math.Round(uY, roundValue);
 
             Protocol += $"\nКоефіцієнт Юла Q = {Q}, Y = {Y} їх значущість" + (uQ < 1.96 ? $"\n{uQ} < 1.96, отже  H0:Q = 0" : $"\n{uQ} > 1.96, отже  H0:Q != 0") +
                 (uY < 1.96 ? $"\n{uY} < 1.96, отже  H0:Q = 0" : $"\n{uY} >= 1.96, отже  H0:Q != 0");
@@ -731,14 +822,14 @@ namespace Quau.Models
             v1 = v1 > 80 ? 80 : v1;
 
             var Xi2Quantilies = quantiles.XI2_a0_2[v1];
-
+            Xi2 = Math.Round(Xi2, roundValue);
             Protocol += $"\nXi2 = {Xi2}" + (Xi2 > Xi2Quantilies ? $" так як {Xi2} > {Xi2Quantilies} - отже стохастичний звязок відсутній"
                 : $" так як {Xi2} < {Xi2Quantilies} - отже наявний стохастичний звязок");
 
             //
 
             double C = Math.Sqrt(Xi2 / (N + Xi2));
-
+            C = Math.Round(C, roundValue);
             Protocol += $"\nКоефіцієнт сполучень Пірсона - {C}";
 
             //
@@ -780,7 +871,7 @@ namespace Quau.Models
             {
                 Protocol += $"\nn == m, отже Міра зв'язку Кендалла обчислюється. Не обчислюється статистика Стюарда";
                 double tb = (P - Q) / (Math.Sqrt((0.5 * N * (N - 1.0) - T1) * (0.5 * N * (N - 1.0) - T2)));
-
+                tb = Math.Round(tb, roundValue);
                 Protocol += $"\nМіра зв'язку Кендалла = {tb}";
 
             }
@@ -789,7 +880,7 @@ namespace Quau.Models
                 Protocol += $"\nn != m, отже Міра зв'язку Кендалла не обчислюється. Обчислити статистику Стюарда";
 
                 double ts = 2 * (P - Q) * Math.Min(xSample.ClassSize, ySample.ClassSize) / (N * N * (Math.Min(xSample.ClassSize, ySample.ClassSize) - 1));
-
+                ts = Math.Round(ts, roundValue);
                 Protocol += $"\nСтатистика Стюарда = {ts}";
             }
 
@@ -860,17 +951,18 @@ namespace Quau.Models
                 }
                 S *= 1.0 / (N - ValuePerX.Count);
             }
+            LambdaValue = Math.Round(LambdaValue, roundValue);
             Protocol += "\nПеревірка умов регресійного аналізу" +
                 "\nВисувається гіпотезаH0:D{y/x1} = ... = D{y/xk}\n" +  $"/\\ - коефіцієнт є {LambdaValue}, а v = {v1}" + (Xi2Quantilies < LambdaValue ? ($"{Xi2Quantilies} < {LambdaValue} - головна гіпотеза відхилена, отже висувається гіпотеза відносно\n " 
                 + "\nВисувається гіпотезаH0:D{y/x1}/h^2(x1) = ... = D{y/xk}/h^2(xk)\n" + ((true) ? "" : "")) 
                 : $"\n{Xi2Quantilies} > {LambdaValue} - головну гіпотезу підтверджено. Отже реалізується параметричний регрісійний аналіз");
 
-            if (Xi2Quantilies > LambdaValue)
+            if (true)
             {
                 double R = CorrelationCountRating();
 
                 double R2 = Math.Pow(R, 2.0) * 100;
-
+                R2 = Math.Round(R2, roundValue);
                 Protocol += $"\nКоефіцієнт детермінації = {R2}";
 
                 Protocol = buildLinearRegresionMNK(Protocol);
@@ -899,8 +991,87 @@ namespace Quau.Models
             {
                 SCommon2 += Math.Pow(TwoDimensionalSample[i].Item2 - (a + b * TwoDimensionalSample[i].Item1), 2.0);
             }
+            SCommon2 *= (1.0 / TwoDimensionalSample.Count);
 
-            Protocol += $"\nОцінка МНК - на графіку чорна лінія. S^2 загальне - {SCommon2}";
+            //
+            Quantiles quantiles = new Quantiles();
+
+            quantiles.TQuantiles();
+
+            int v1 = TwoDimensionalSample.Count - 1;
+
+            v1 = v1 <= 10 ? 10 : v1 <= 30 ? 30 : 120;
+
+            var TQuantile = quantiles.T_a0_1[v1];
+            //
+            LinearRegresionMNKMax = new ObservableCollection<XYData> { };
+            LinearRegresionMNKMin = new ObservableCollection<XYData> { };
+            for (double i = xSample.Sample.Min(); i <= xSample.Sample.Max(); i += xSample.StepSize)
+            {
+                LinearRegresionMNKMax.Add(new XYData { X = i, Y = (a + b * i) + TQuantile * Math.Sqrt(SCommon2) });
+                LinearRegresionMNKMin.Add(new XYData { X = i, Y = (a + b * i) - TQuantile * Math.Sqrt(SCommon2) });
+            }
+
+            double f1 = Math.Pow(xSample.QuantitiveCharactacteristics.AritmeitcMean, 2.0) /
+                (Math.Pow(xSample.QuantitiveCharactacteristics.S_Variance_Shifted, 2.0) * (TwoDimensionalSample.Count - 1.0));
+
+            double f2 = Math.Sqrt((1.0 / TwoDimensionalSample.Count) + f1);
+
+            double SA = SCommon2 * f2;
+
+            double SB = SCommon2 / (xSample.QuantitiveCharactacteristics.S_Variance_unShifted * (Math.Sqrt(TwoDimensionalSample.Count - 1.0)));
+
+            LinearRegresionMNKMaxIntervalNew = new ObservableCollection<XYData> { };
+            LinearRegresionMNKMinIntervalNew = new ObservableCollection<XYData> { };
+
+            for (double i = xSample.Sample.Min(); i <= xSample.Sample.Max(); i += xSample.StepSize)
+            {
+                double SYX0 = Math.Sqrt(SCommon2 * (1.0 - 1.0 / TwoDimensionalSample.Count) + Math.Pow(SB, 2.0) * Math.Pow(i - xSample.QuantitiveCharactacteristics.AritmeitcMean, 2.0));
+                LinearRegresionMNKMaxIntervalNew.Add(new XYData { X = i, Y = (a + b * i) + TQuantile * SYX0 });
+                LinearRegresionMNKMinIntervalNew.Add(new XYData { X = i, Y = (a + b * i) - TQuantile * SYX0 });
+            }
+
+            LinearRegresionMNKMaxInterval = new ObservableCollection<XYData> { };
+            LinearRegresionMNKMinInterval = new ObservableCollection<XYData> { };
+            for (double i = xSample.Sample.Min(); i <= xSample.Sample.Max(); i += xSample.StepSize)
+            {
+                double SYX0 = Math.Sqrt(SCommon2 * (1.0 / TwoDimensionalSample.Count) + Math.Pow(SB, 2.0) * Math.Pow(i - xSample.QuantitiveCharactacteristics.AritmeitcMean, 2.0));
+                LinearRegresionMNKMaxInterval.Add(new XYData { X = i, Y = (a + b * i) + TQuantile * SYX0 });
+                LinearRegresionMNKMinInterval.Add(new XYData { X = i, Y = (a + b * i) - TQuantile * SYX0 });
+            }
+
+            double ta = Math.Abs((a) / SA);
+            double tb = Math.Abs((b) / SB);
+
+            quantiles.FQuantiles();
+            int v2 = TwoDimensionalSample.Count - 3;
+
+            v2 = v2 <= 10 ? 10 : (v2 <= 30 ? 30 : 120);
+
+            double fQuantiles = v1 == 10 ? quantiles.F_v1_10_a0_05[v2] : (v1 == 30 ? quantiles.F_v1_30_a0_05[v2] : quantiles.F_v1_120_a0_05[v2]);
+
+            double f = SCommon2 / ySample.QuantitiveCharactacteristics.S_Variance_unShifted;
+            SCommon2 = Math.Round(SCommon2, roundValue);
+
+            a = Math.Round(a, roundValue);
+            b = Math.Round(b, roundValue);
+
+            ta = Math.Round(ta, roundValue);
+            tb = Math.Round(tb, roundValue);
+
+            SA = Math.Round(SA, roundValue);
+            SB = Math.Round(SB, roundValue);
+
+            f = Math.Round(f, roundValue);
+
+            Protocol += $"\n\nОцінка МНК - на графіку чорна лінія. S^2 загальне - {SCommon2}" +
+                $"\nПри значущості = 0.1, а v = {v1}. " +
+                $"\nОцінка параметру a = {a}, тобто H0:a = 0: " + (Math.Abs(ta) <= TQuantile ? $"{ta} <= {TQuantile} отже головна гіпотеза підтверджена" : $"{ta} > {TQuantile} отже головна гіпотеза спростовано ") +
+                $"\nОцінка параметру b = {b}, тобто H0:b = 0: " + (Math.Abs(tb) <= TQuantile ? $"{tb} <= {TQuantile} отже головна гіпотеза підтверджена" : $"{tb} > {TQuantile} отже головна гіпотеза спростовано ") +
+                $"\nІнтервальне оцінювання a = {{{a - TQuantile * SA}; {a + TQuantile * SA}}}" +
+                $"\nІнтервальне оцінювання b = {{{b - TQuantile * SB}; {b + TQuantile * SB}}}" +
+                $"\nПереварка H0:y(x)=^y(x), де f = {f}: " + (f <= fQuantiles ? $"{f} <= {fQuantiles}  - отже змодельована залежність адекватна"
+                : $"{f} > {fQuantiles} - отже змодельована залежність неадекватна");
 
             return Protocol;
         }
@@ -939,7 +1110,84 @@ namespace Quau.Models
                 SCommon2 += Math.Pow(TwoDimensionalSample[i].Item2 - (a + b * TwoDimensionalSample[i].Item1), 2.0);
             }
 
-            Protocol += $"\nОцінка Тейлора - на графіку сіра лінія. S^2 загальне - {SCommon2}";
+            SCommon2 *= (1.0 / TwoDimensionalSample.Count);
+            //
+            Quantiles quantiles = new Quantiles();
+
+            quantiles.TQuantiles();
+
+            int v1 = TwoDimensionalSample.Count - 1;
+
+            v1 = v1 <= 10 ? 10 : v1 <= 30 ? 30 : 120;
+
+            var TQuantile = quantiles.T_a0_1[v1];
+            //
+            LinearRegresionTaylorMax = new ObservableCollection<XYData> { };
+            LinearRegresionTaylorMin = new ObservableCollection<XYData> { };
+            for (double i = xSample.Sample.Min(); i <= xSample.Sample.Max(); i += xSample.StepSize)
+            {
+                LinearRegresionTaylorMax.Add(new XYData { X = i, Y = (a + b * i) + TQuantile * Math.Sqrt(SCommon2) });
+                LinearRegresionTaylorMin.Add(new XYData { X = i, Y = (a + b * i) - TQuantile * Math.Sqrt(SCommon2) });
+            }
+
+            double SA = SCommon2 * Math.Sqrt((1.0 / TwoDimensionalSample.Count) + Math.Pow(xSample.QuantitiveCharactacteristics.AritmeitcMean, 2.0) / 
+                (Math.Pow(xSample.QuantitiveCharactacteristics.S_Variance_Shifted, 2.0) * (TwoDimensionalSample.Count - 1.0)));
+
+            double SB = SCommon2 / (xSample.QuantitiveCharactacteristics.S_Variance_unShifted * (Math.Sqrt(TwoDimensionalSample.Count - 1.0)));
+
+            LinearRegresionTaylorMaxIntervalNew = new ObservableCollection<XYData> { };
+            LinearRegresionTaylorMinIntervalNew = new ObservableCollection<XYData> { };
+
+            for (double i = xSample.Sample.Min(); i <= xSample.Sample.Max(); i += xSample.StepSize)
+            {
+                double SYX0 = Math.Sqrt(SCommon2 * (1.0 - 1.0 / TwoDimensionalSample.Count) + Math.Pow(SB, 2.0) * Math.Pow(i - xSample.QuantitiveCharactacteristics.AritmeitcMean, 2.0));
+                LinearRegresionTaylorMaxIntervalNew.Add(new XYData { X = i, Y = (a + b * i) + TQuantile * SYX0 });
+                LinearRegresionTaylorMinIntervalNew.Add(new XYData { X = i, Y = (a + b * i) - TQuantile * SYX0 });
+            }
+
+            LinearRegresionTaylorMaxInterval = new ObservableCollection<XYData> { };
+            LinearRegresionTaylorMinInterval = new ObservableCollection<XYData> { };
+
+            for (double i = xSample.Sample.Min(); i <= xSample.Sample.Max(); i += xSample.StepSize)
+            {
+                double f1 = Math.Pow(SB, 2.0) * Math.Pow(i - xSample.QuantitiveCharactacteristics.AritmeitcMean, 2.0);
+                double SYX0 = Math.Sqrt(SCommon2 * (1.0 / TwoDimensionalSample.Count) + Math.Pow(SB, 2.0) * Math.Pow(i - xSample.QuantitiveCharactacteristics.AritmeitcMean, 2.0));
+                LinearRegresionTaylorMaxInterval.Add(new XYData { X = i, Y = (a + b * i) + TQuantile * SYX0 });
+                LinearRegresionTaylorMinInterval.Add(new XYData { X = i, Y = (a + b * i) - TQuantile * SYX0 });
+            }
+
+            double ta = Math.Abs((a) / SA);
+            double tb = Math.Abs((b) / SB);
+
+            quantiles.FQuantiles();
+            int v2 = TwoDimensionalSample.Count - 3;
+
+            v2 = v2 <= 10 ? 10 : (v2 <= 30 ? 30 : 120);
+
+            double fQuantiles = v1 == 10 ? quantiles.F_v1_10_a0_05[v2] : (v1 == 30 ? quantiles.F_v1_30_a0_05[v2] : quantiles.F_v1_120_a0_05[v2]);
+            
+            double f = SCommon2 / ySample.QuantitiveCharactacteristics.S_Variance_unShifted;
+            SCommon2 = Math.Round(SCommon2, roundValue);
+
+            a = Math.Round(a, roundValue);
+            b = Math.Round(b, roundValue);
+
+            ta = Math.Round(ta, roundValue);
+            tb = Math.Round(tb, roundValue);
+
+            SA = Math.Round(SA, roundValue);
+            SB = Math.Round(SB, roundValue);
+
+            f = Math.Round(f, roundValue);
+
+            Protocol += $"\n\nОцінка Тейлора - на графіку сіра лінія. S^2 загальне - {SCommon2}" +
+                $"\nПри значущості = 0.1, а v = {v1}. " +
+                $"\nОцінка параметру a = {a}, тобто H0:a = 0: " + (Math.Abs(ta) <= TQuantile ? $"{ta} <= {TQuantile} отже головна гіпотеза підтверджена" : $"{ta} > {TQuantile} отже головна гіпотеза спростовано ") +
+                $"\nОцінка параметру b = {b}, тобто H0:b = 0: " + (Math.Abs(tb) <= TQuantile ? $"{tb} <= {TQuantile} отже головна гіпотеза підтверджена" : $"{tb} > {TQuantile} отже головна гіпотеза спростовано ") +
+                $"\nІнтервальне оцінювання a = {{{a - TQuantile * SA}; {a + TQuantile * SA}}}" +
+                $"\nІнтервальне оцінювання b = {{{b - TQuantile * SB}; {b + TQuantile * SB}}}" + 
+                $"\nПереварка H0:y(x)=^y(x), де f = {f}: " + (f <= fQuantiles ? $"{f} <= {fQuantiles}  - отже змодельована залежність адекватна" 
+                : $"{f} > {fQuantiles} - отже змодельована залежність неадекватна");
 
             return Protocol;
         }
