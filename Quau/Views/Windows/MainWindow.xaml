@@ -42,6 +42,7 @@
                 <MenuItem Header="Довірчий інтервал та критерій згоди" Command="{Binding OpenDistributionWindow}"/>
             </MenuItem>
             <MenuItem Header="Перерахувати двовимірну вибірку" Command="{Binding StartTwoDimensionalCount}"/>
+            <MenuItem Header="Вилучити аномальні данні" Command="{Binding StartTwoDimensionalCountLogarithm}"/>
         </Menu>
 
         <StatusBar DockPanel.Dock="Bottom">

@@ -123,6 +123,21 @@ namespace Quau.ViewModels
         }
         #endregion
 
+        #region StartTwoDimensionalCountLogarithm
+
+        public ICommand StartTwoDimensionalCountLogarithm { get; }
+        private bool CanStartTwoDimensionalCountLogarithmExecute(object p)
+        {
+            return true;
+        }
+
+        private void OnStartTwoDimensionalCountLogarithmExecuted(object p)
+        {
+            TwoDimentional.Logarithm();
+        }
+
+        #endregion
+
         #region StartTwoDimensionalCount
 
         public ICommand StartTwoDimensionalCount { get; }
@@ -134,6 +149,8 @@ namespace Quau.ViewModels
 
         private void OnStartTwoDimensionalCountExecuted(object p)
         {
+            TwoDimentional.SeparateInTwoSample();
+
             TwoDimentional.SetTwoDimentionalSample();
 
             TwoDimentional.SetHistogramSample();
@@ -475,6 +492,8 @@ namespace Quau.ViewModels
             GraphFunctionWindowModel = new GraphFunctionWindowViewModel(this);
 
             DataWindowModel = new DataWindowViewModel(this);
+
+            StartTwoDimensionalCountLogarithm = new LambdaCommand(OnStartTwoDimensionalCountLogarithmExecuted, CanStartTwoDimensionalCountLogarithmExecute);
 
             StartTwoDimensionalCount = new LambdaCommand(OnStartTwoDimensionalCountExecuted, CanStartTwoDimensionalCountExecute);
 

@@ -249,6 +249,15 @@ namespace Quau.Models
             return false;
         }
 
+        public void Logarithm()
+        {
+            for (int i = 0; i < TwoDimensionalSample.Count; i++)
+            {
+                (double, double) el = TwoDimensionalSample[i];
+                TwoDimensionalSample[i] = (Math.Log(el.Item1), Math.Log(el.Item2));
+            }
+        }
+
         public void SetClassSize(double xClass, double yClass)
         {
             this.ClassSize = (xClass, yClass);
@@ -977,14 +986,14 @@ namespace Quau.Models
         {
             double R = CorrelationCountRating();
 
-            double b = R * ySample.QuantitiveCharactacteristics.S_Variance_unShifted / xSample.QuantitiveCharactacteristics.S_Variance_unShifted;
-            double a = ySample.QuantitiveCharactacteristics.AritmeitcMean - b * ySample.QuantitiveCharactacteristics.AritmeitcMean;
+            double b = Math.Sqrt(R * ySample.QuantitiveCharactacteristics.S_Variance_Shifted / xSample.QuantitiveCharactacteristics.S_Variance_Shifted);
+            double a = ySample.QuantitiveCharactacteristics.AritmeitcMean - b * xSample.QuantitiveCharactacteristics.AritmeitcMean;
             LinearRegresionMNK = new ObservableCollection<XYData> { };
             for(double i = xSample.Sample.Min(); i <= xSample.Sample.Max(); i += xSample.StepSize)
             {
                 LinearRegresionMNK.Add(new XYData { X = i, Y = a + b * i});
             }
-
+            LinearRegresionMNK.Add(new XYData { X = xSample.Sample.Max(), Y = a + b * xSample.Sample.Max() });
             double SCommon2 = 0;
 
             for(int i = 0; i < TwoDimensionalSample.Count; i++)
@@ -1011,7 +1020,8 @@ namespace Quau.Models
                 LinearRegresionMNKMax.Add(new XYData { X = i, Y = (a + b * i) + TQuantile * Math.Sqrt(SCommon2) });
                 LinearRegresionMNKMin.Add(new XYData { X = i, Y = (a + b * i) - TQuantile * Math.Sqrt(SCommon2) });
             }
-
+            LinearRegresionMNKMax.Add(new XYData { X = xSample.Sample.Max(), Y = (a + b * xSample.Sample.Max()) + TQuantile * Math.Sqrt(SCommon2) });
+            LinearRegresionMNKMin.Add(new XYData { X = xSample.Sample.Max(), Y = (a + b * xSample.Sample.Max()) - TQuantile * Math.Sqrt(SCommon2) });
             double f1 = Math.Pow(xSample.QuantitiveCharactacteristics.AritmeitcMean, 2.0) /
                 (Math.Pow(xSample.QuantitiveCharactacteristics.S_Variance_Shifted, 2.0) * (TwoDimensionalSample.Count - 1.0));
 
@@ -1030,6 +1040,9 @@ namespace Quau.Models
                 LinearRegresionMNKMaxIntervalNew.Add(new XYData { X = i, Y = (a + b * i) + TQuantile * SYX0 });
                 LinearRegresionMNKMinIntervalNew.Add(new XYData { X = i, Y = (a + b * i) - TQuantile * SYX0 });
             }
+            double SYX01 = Math.Sqrt(SCommon2 * (1.0 - 1.0 / TwoDimensionalSample.Count) + Math.Pow(SB, 2.0) * Math.Pow(xSample.Sample.Max() - xSample.QuantitiveCharactacteristics.AritmeitcMean, 2.0));
+            LinearRegresionMNKMaxIntervalNew.Add(new XYData { X = xSample.Sample.Max(), Y = (a + b * xSample.Sample.Max()) + TQuantile * SYX01 });
+            LinearRegresionMNKMinIntervalNew.Add(new XYData { X = xSample.Sample.Max(), Y = (a + b * xSample.Sample.Max()) - TQuantile * SYX01 });
 
             LinearRegresionMNKMaxInterval = new ObservableCollection<XYData> { };
             LinearRegresionMNKMinInterval = new ObservableCollection<XYData> { };
@@ -1039,6 +1052,9 @@ namespace Quau.Models
                 LinearRegresionMNKMaxInterval.Add(new XYData { X = i, Y = (a + b * i) + TQuantile * SYX0 });
                 LinearRegresionMNKMinInterval.Add(new XYData { X = i, Y = (a + b * i) - TQuantile * SYX0 });
             }
+            SYX01 = Math.Sqrt(SCommon2 * (1.0 / TwoDimensionalSample.Count) + Math.Pow(SB, 2.0) * Math.Pow(xSample.Sample.Max() - xSample.QuantitiveCharactacteristics.AritmeitcMean, 2.0));
+            LinearRegresionMNKMaxInterval.Add(new XYData { X = xSample.Sample.Max(), Y = (a + b * xSample.Sample.Max()) + TQuantile * SYX01 });
+            LinearRegresionMNKMinInterval.Add(new XYData { X = xSample.Sample.Max(), Y = (a + b * xSample.Sample.Max()) - TQuantile * SYX01 });
 
             double ta = Math.Abs((a) / SA);
             double tb = Math.Abs((b) / SB);
@@ -1102,7 +1118,7 @@ namespace Quau.Models
             {
                 LinearRegresionTaylor.Add(new XYData { X = i, Y = a + b * i });
             }
-
+            LinearRegresionTaylor.Add(new XYData { X = xSample.Sample.Max(), Y = a + b * xSample.Sample.Max() });
             double SCommon2 = 0;
 
             for (int i = 0; i < TwoDimensionalSample.Count; i++)
@@ -1129,7 +1145,8 @@ namespace Quau.Models
                 LinearRegresionTaylorMax.Add(new XYData { X = i, Y = (a + b * i) + TQuantile * Math.Sqrt(SCommon2) });
                 LinearRegresionTaylorMin.Add(new XYData { X = i, Y = (a + b * i) - TQuantile * Math.Sqrt(SCommon2) });
             }
-
+            LinearRegresionTaylorMax.Add(new XYData { X = xSample.Sample.Max(), Y = (a + b * xSample.Sample.Max()) + TQuantile * Math.Sqrt(SCommon2) });
+            LinearRegresionTaylorMin.Add(new XYData { X = xSample.Sample.Max(), Y = (a + b * xSample.Sample.Max()) - TQuantile * Math.Sqrt(SCommon2) });
             double SA = SCommon2 * Math.Sqrt((1.0 / TwoDimensionalSample.Count) + Math.Pow(xSample.QuantitiveCharactacteristics.AritmeitcMean, 2.0) / 
                 (Math.Pow(xSample.QuantitiveCharactacteristics.S_Variance_Shifted, 2.0) * (TwoDimensionalSample.Count - 1.0)));
 
@@ -1144,6 +1161,9 @@ namespace Quau.Models
                 LinearRegresionTaylorMaxIntervalNew.Add(new XYData { X = i, Y = (a + b * i) + TQuantile * SYX0 });
                 LinearRegresionTaylorMinIntervalNew.Add(new XYData { X = i, Y = (a + b * i) - TQuantile * SYX0 });
             }
+            double SYX01 = Math.Sqrt(SCommon2 * (1.0 - 1.0 / TwoDimensionalSample.Count) + Math.Pow(SB, 2.0) * Math.Pow(xSample.Sample.Max() - xSample.QuantitiveCharactacteristics.AritmeitcMean, 2.0));
+            LinearRegresionTaylorMaxIntervalNew.Add(new XYData { X = xSample.Sample.Max(), Y = (a + b * xSample.Sample.Max()) + TQuantile * SYX01 });
+            LinearRegresionTaylorMinIntervalNew.Add(new XYData { X = xSample.Sample.Max(), Y = (a + b * xSample.Sample.Max()) - TQuantile * SYX01 });
 
             LinearRegresionTaylorMaxInterval = new ObservableCollection<XYData> { };
             LinearRegresionTaylorMinInterval = new ObservableCollection<XYData> { };
@@ -1155,7 +1175,9 @@ namespace Quau.Models
                 LinearRegresionTaylorMaxInterval.Add(new XYData { X = i, Y = (a + b * i) + TQuantile * SYX0 });
                 LinearRegresionTaylorMinInterval.Add(new XYData { X = i, Y = (a + b * i) - TQuantile * SYX0 });
             }
-
+            SYX01 = Math.Sqrt(SCommon2 * (1.0 / TwoDimensionalSample.Count) + Math.Pow(SB, 2.0) * Math.Pow(xSample.Sample.Max() - xSample.QuantitiveCharactacteristics.AritmeitcMean, 2.0));
+            LinearRegresionTaylorMaxInterval.Add(new XYData { X = xSample.Sample.Max(), Y = (a + b * xSample.Sample.Max()) + TQuantile * SYX01 });
+            LinearRegresionTaylorMinInterval.Add(new XYData { X = xSample.Sample.Max(), Y = (a + b * xSample.Sample.Max()) - TQuantile * SYX01 });
             double ta = Math.Abs((a) / SA);
             double tb = Math.Abs((b) / SB);
 
